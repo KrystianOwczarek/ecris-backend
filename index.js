@@ -321,10 +321,11 @@ app.post("/addcitizenships", async(req, res) => {
 app.post("/addalv", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO alv(`language`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
+    const q = "INSERT INTO alv(`language`, `id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
 
     const values = [
         req.body.language,
+        req.body.id,
         req.body.AddTAT,
         req.body.priceEU,
         req.body.priceGB,
