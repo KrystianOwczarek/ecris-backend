@@ -15,9 +15,9 @@ dotenv.config();
 //Database connection
 const pool = mysql.createPool({
     host: "sql7.freemysqlhosting.net",
-    user: "sql7627486",
-    password: "Gyebp4m63j",
-    database: "sql7627486",
+    user: "sql7644212",
+    password: "GJGU8fFDkk",
+    database: "sql7644212",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
