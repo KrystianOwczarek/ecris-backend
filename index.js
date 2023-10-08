@@ -19,17 +19,17 @@ const pool = mysql.createPool({
     password: "GJGU8fFDkk",
     database: "sql7644212",
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 20,
     queueLimit: 0,
 })
 
 //You can use env variables in this transporter but you have to configure it on Deta, i left this like this beacuse Deta have problems with env variables.
 let transporter = nodemailer.createTransport({
-    host: "smtp-relay.sendinblue.com",
+    host: "smtp-relay.brevo.com",
     port: 587,
     auth: {
         user: "ecrisapptest@gmail.com",
-        pass: "xsmtpsib-17ee3c9e215ef809ad3f41eba733d41087081ad69b2dedb4e3395f5f2409b65b-UraGQTcDknM2xWb0"
+        pass: "AW7nhL8wd0mBCvkI"
     },
 });
 
@@ -173,8 +173,6 @@ app.get("/aditset1", async (req, res) => {
 
 //-----------------------------------------GET OBJECTS------------------------------------------------------------------
 app.get("/countries", async(req, res) => {
-    //const conn = pool.getConnection();
-
     const q = "SELECT * FROM countries";
     await pool.query(q, (err, data) => {
         if (err) {
@@ -185,6 +183,42 @@ app.get("/countries", async(req, res) => {
     });
 
     //conn.release();
+});
+
+//get all headers from first page
+app.get("/fPageHeaders", async(req, res) => {
+    const q = "SELECT * FROM fPageHeaders";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+//get all headers from second page
+app.get("/sPageHeaders", async(req, res) => {
+    const q = "SELECT * FROM sPageHeaders";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+//get all headers from third page
+app.get("/tPageHeaders", async(req, res) => {
+    const q = "SELECT * FROM tPageHeaders";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
 });
 
 app.get("/citizenships", async (req, res) => {
@@ -270,7 +304,7 @@ app.get("/delivery", async(req, res) => {
 app.post("/addcountries", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO countries(`country_name`,`id`,`tat`,`price_eu`,`price_gb`,`price_bu`,`price_cz`,`price_pl`,`price_dk`,`price_ro`,`price_se`,`comment`,`comment2`) VALUES (?)";
+    const q = "INSERT INTO countries(`country_name`,`id`,`tat`,`price_eu`,`price_gb`,`price_bu`,`price_cz`,`price_pl`,`price_dk`,`price_ro`,`price_se`,`comment`,`comment2`, `requirement`) VALUES (?)";
 
     const values = [
         req.body.country_name,
@@ -286,6 +320,7 @@ app.post("/addcountries", async(req, res) => {
         req.body.price_se,
         req.body.comment,
         req.body.comment2,
+        req.body.requirement,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -293,6 +328,140 @@ app.post("/addcountries", async(req, res) => {
         return res.json(data);
     });
 
+    //conn.release();
+});
+
+app.put("/updatefPageHeader", async(req, res) => {
+    //const conn = pool.getConnection();
+    const bookId = req.params.id;
+    const q = "UPDATE `fPageHeaders` SET `jobSeeker1`=?,`jobSeeker2`=?,`jobSeeker3`=?,`jobSeeker4`=?,`jobSeeker5`=?,`jobSeeker6`=?,`chooseCountries`=?,`countryHeader`=?,`tatHeader`=?,`priceHeader`=?,`chooseCitizenship`=?,`citHeader`=?,`repDelHeader`=?,`detailsHeader`=?,`addLangHeader`=?,`oServicesHeader`=?,`addTatHeader`=?,`certTransHeader`=?,`apostilleHeader`=?,`costHeader`=?,`costStatesHeader`=?,`costReportHeader`=?,`costAddTatHeader`=?,`costCertHeader`=?,`costApostilleHeader`=?,`costSummaryHeader`=?,`costSummaryText`=?,`costAddTatText`=?,`costTotalHeader`=?,`includeTaxText`=?,`id`=? WHERE id=1";
+
+    const values = [
+        req.body.jobSeeker1,
+        req.body.jobSeeker2,
+        req.body.jobSeeker3,
+        req.body.jobSeeker4,
+        req.body.jobSeeker5,
+        req.body.jobSeeker6,
+        req.body.chooseCountries,
+        req.body.countryHeader,
+        req.body.tatHeader,
+        req.body.priceHeader,
+        req.body.chooseCitizenship,
+        req.body.citHeader,
+        req.body.repDelHeader,
+        req.body.detailsHeader,
+        req.body.addLangHeader,
+        req.body.oServicesHeader,
+        req.body.addTatHeader,
+        req.body.certTransHeader,
+        req.body.apostilleHeader,
+        req.body.costHeader,
+        req.body.costStatesHeader,
+        req.body.costReportHeader,
+        req.body.costAddTatHeader,
+        req.body.costCertHeader,
+        req.body.costApostilleHeader,
+        req.body.costSummaryHeader,
+        req.body.costSummaryText,
+        req.body.costAddTatText,
+        req.body.costTotalHeader,
+        req.body.includeTaxText,
+        req.body.id,
+    ];
+
+    pool.query(q, [...values, bookId], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+    //conn.release();
+});
+
+
+
+app.put("/updateSPageHeader", async(req, res) => {
+    //const conn = pool.getConnection();
+    const bookId = req.params.id;
+    const q = "UPDATE `sPageHeaders` SET `provideHeader`=?,`title`=?,`titleComment`=?,`forename`=?,`forenameComment`=?,`middleName`=?,`middleNameComment`=?,`surname`=?,`surnameComment`=?,`surnameBirth`=?,`surnameBirthComment`=?,`birthDate`=?,`birthDateComment`=?,`birthTown`=?,`birthTownComment`=?,`birthCountry`=?,`birthCountryComment`=?,`montherName`=?,`montherNameComment`=?,`motherMName`=?,`motherMNameComment`=?,`idNumber`=?,`idNumberComment`=?,`currentAdress`=?,`addressLine1`=?,`addressLine1Comment`=?,`addressLine2`=?,`addressLine2Comment`=?,`country`=?,`countryComment`=?,`emailAddress`=?,`emailAddressComment`=?,`confEmailAddress`=?,`confEmailAddressComment`=?,`phoneNumber`=?,`phoneNumberComment`=?,`uploadScan`=?,`uploadScanComment`=?,`indedRecipent`=?,`indedRecipentComment`=?,`addComment`=?,`addCommentComment`=?,`uploadFiles`=?,`id`=?,`fatherName`=?,`fatherNameComment`=? WHERE id=1";
+
+    const values = [
+        req.body.provideHeader,
+        req.body.title,
+        req.body.titleComment,
+        req.body.forename,
+        req.body.forenameComment,
+        req.body.middleName,
+        req.body.middleNameComment,
+        req.body.surname,
+        req.body.surnameComment,
+        req.body.surnameBirth,
+        req.body.surnameBirthComment,
+        req.body.birthDate,
+        req.body.birthDateComment,
+        req.body.birthTown,
+        req.body.birthTownComment,
+        req.body.birthCountry,
+        req.body.birthCountryComment,
+        req.body.montherName,
+        req.body.montherNameComment,
+        req.body.motherMName,
+        req.body.motherMNameComment,
+        req.body.idNumber,
+        req.body.idNumberComment,
+        req.body.currentAdress,
+        req.body.addressLine1,
+        req.body.addressLine1Comment,
+        req.body.addressLine2,
+        req.body.addressLine2Comment,
+        req.body.country,
+        req.body.countryComment,
+        req.body.emailAddress,
+        req.body.emailAddressComment,
+        req.body.confEmailAddress,
+        req.body.confEmailAddressComment,
+        req.body.phoneNumber,
+        req.body.phoneNumberComment,
+        req.body.uploadScan,
+        req.body.uploadScanComment,
+        req.body.indedRecipent,
+        req.body.indedRecipentComment,
+        req.body.addComment,
+        req.body.addCommentComment,
+        req.body.uploadFiles,
+        req.body.id,
+        req.body.fatherName,
+        req.body.fatherNameComment,
+    ];
+
+    pool.query(q, [...values, bookId], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+    //conn.release();
+});
+
+app.put("/updateTPageHeader", async(req, res) => {
+    //const conn = pool.getConnection();
+    const bookId = req.params.id;
+    const q = "UPDATE `tPageHeaders` SET `orderSummary`=?,`checkData`=?,`selectedOpt`=?,`addComment`=?,`charge`=?,`tat`=?,`personalData`=?,`address`=?,`privacyPolicy`=?,`id`=? WHERE id=1";
+
+    const values = [
+        req.body.orderSummary,
+        req.body.checkData,
+        req.body.selectedOpt,
+        req.body.addComment,
+        req.body.charge,
+        req.body.tat,
+        req.body.personalData,
+        req.body.address,
+        req.body.privacyPolicy,
+        req.body.id,
+    ];
+
+    pool.query(q, [...values, bookId], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
     //conn.release();
 });
 
@@ -321,7 +490,7 @@ app.post("/addcitizenships", async(req, res) => {
 app.post("/addalv", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO alv(`language`, `id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
+    const q = "INSERT INTO alv(`language`,`id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
 
     const values = [
         req.body.language,
@@ -422,6 +591,121 @@ app.post("/addcertificate", async(req, res) => {
     });
 });
 
+app.post("/addService", async(req, res) => {
+    //const conn = pool.getConnection();
+    let array = [];
+    for(const key in req.body.otherData){
+        array.push(req.body.otherData[key] + ` VARCHAR(255) DEFAULT NULL`)
+    }
+    const string = array.toString();
+    const q = `CREATE TABLE ${req.body.header} ( ${string}, id INT(11) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
+
+    pool.query(q, (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+});
+
+app.get('/newService', async(req, res) => {
+    const q = 'SELECT * FROM `newServices`';
+    
+    pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+})
+
+app.post('/columnsNames', async(req, res) => {
+    const q = `DESCRIBE ${req.body.url}`;
+    pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+})
+
+app.post('/columnsValues', async(req, res) => {
+    const q = `SELECT * FROM ${req.body.url}`;
+
+    pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+})
+
+app.post('/columnsValues/:id', async(req, res) => {
+    const { id } = req.params;
+    const q = `SELECT * FROM ${req.body.url} WHERE id=${id}`;
+
+    pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+})
+
+app.put('/updateColumnsValues/:id', async(req, res) => {
+    const { id } = req.params;
+    const array = [];
+    const obj = req.body.obj;
+    for(const key in obj) {
+        array.push(`${key}=?`)
+    }
+    const q = `UPDATE ${req.body.header} SET ${array.toString()}  WHERE id=${id}`;
+    const values = Object.values(obj);
+
+
+    pool.query(q,[...values, id], (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+})
+
+app.post('/addColumnsValues', async(req, res) => {
+    const columnArray = [];
+    req.body.columns.map(column => columnArray.push(column.Field));
+    const columnString = columnArray.toString();
+    const q = `INSERT INTO ${req.body.header} (${columnString}) VALUES (?)`;
+    const values = [];
+    for(const key in req.body.values){
+        values.push(req.body.values[key]);
+    }
+    values.push(req.body.id);
+    pool.query(q, [values], (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+})
+
+app.post('/newServices', async(req, res) => {
+    const q = 'INSERT INTO `newServices`(`allServices`) VALUES (?)';
+
+    const values = [
+        req.body.allServices
+    ];
+
+    pool.query(q,[values], (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
 //-----------------------------------------DELETING---------------------------------------------------------
 
 app.delete("/delete/:id", async(req, res) => {
@@ -436,6 +720,23 @@ app.delete("/delete/:id", async(req, res) => {
     });
 
     //conn.release();
+});
+
+app.post("/deleteService", async(req, res) => {
+    const q = `DROP TABLE ${req.body.header}`;
+    console.log(q)
+    pool.query(q, (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+});
+
+app.post("/deleteServiceFromNewService", async(req, res) => {
+    const q = `DELETE FROM newServices WHERE allServices='${req.body.header}'`;
+    pool.query(q, (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
 });
 
 app.delete("/deleteCit/:id", async(req, res) => {
@@ -508,6 +809,15 @@ app.delete("/deleteAlv/:id", async(req, res) => {
     //conn.release();
 });
 
+app.post("/deleteValues/:id", async(req, res) => {
+    const bookId = req.params.id;
+    const q = `DELETE FROM ${req.body.header} WHERE id = ?`;
+    pool.query(q, [bookId], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+});
+
 //-----------------------------------------DELETING---------------------------------------------------------
 
 
@@ -530,7 +840,7 @@ app.put("/countries/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE countries SET `country_name`= ?, id = ?, `tat`= ?, `price_eu`= ?, `price_gb`= ?, `price_bu`= ?, `price_cz`= ?, `price_pl`= ?, `price_dk`= ?, `price_ro`= ?, `price_se`= ?, `comment`= ?, `comment2`= ? WHERE id = ?";
+    const q = "UPDATE countries SET `country_name`= ?, id = ?, `tat`= ?, `price_eu`= ?, `price_gb`= ?, `price_bu`= ?, `price_cz`= ?, `price_pl`= ?, `price_dk`= ?, `price_ro`= ?, `price_se`= ?, `comment`= ?, `comment2`= ?, `requirement`=?  WHERE id = ?";
 
     const values = [
         req.body.country_name,
@@ -546,15 +856,17 @@ app.put("/countries/:id", async(req, res) => {
         req.body.price_se,
         req.body.comment,
         req.body.comment2,
+        req.body.requirement,
     ];
 
-    pool.query(q, [...values,bookId], (err, data) => {
+    pool.query(q, [...values, bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
 
     //conn.release();
 });
+
 
 app.put("/citizenships/:id", async (req, res) => {
     //const conn = pool.getConnection();
