@@ -592,13 +592,8 @@ app.post("/addcertificate", async(req, res) => {
 });
 
 app.post("/addService", async(req, res) => {
-    //const conn = pool.getConnection();
-    let array = [];
-    for(const key in req.body.otherData){
-        array.push(req.body.otherData[key] + ` VARCHAR(255) DEFAULT NULL`)
-    }
-    const string = array.toString();
-    const q = `CREATE TABLE ${req.body.header} ( ${string}, id INT(11) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
+
+    const q = `CREATE TABLE ${req.body.header} ( Type VARCHAR(255), Tat INT(11), priceEU INT(11), priceGB INT(11), priceBU INT(11), priceCZ INT(11),pricePL INT(11), priceDK INT(11), priceRO INT(11), priceSE INT(11), id INT(11) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
     pool.query(q, (err, data) => {
         if (err) return res.send(err);
@@ -701,6 +696,24 @@ app.post('/newServices', async(req, res) => {
     ];
 
     pool.query(q,[values], (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/renameTable', async(req, res) => {
+    const q = `ALTER TABLE ${req.body.oldtable} RENAME ${req.body.newtable}`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewService', async(req, res) => {
+    const q = `UPDATE newServices SET allServices='${req.body.newtable}' WHERE allServices='${req.body.oldtable}'`;
+
+    pool.query(q, (err, data) => {
         if(err) return res.send(err);
         return res.json(data);
     })
