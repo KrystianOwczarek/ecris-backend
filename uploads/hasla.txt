@@ -1,0 +1,151 @@
+OLX:
+krystian.owczarek@onet.pl
+S@m$ung1123123213123
+
+GMAIL PRAKTYKANT: 
+dominikpraktykant12@gmail.com
+$D0minik123%#@
+username: Dominik1029
+https://github.com/GitWebosta/DzienDobryDoktorze-kopia
+
+DETA SPACE:
+krystian12
+krystian.owczarek112@gmail.com
+S@msung112
+
+POCZTA WEBOSTA:
+krystian@webosta.net
+s@msung112
+
+GITHUB:
+krystian.owczarek@onet.pl
+S@msung112!
+
+git@webosta.net
+#Webokami17!rk9cgcjk94!
+
+c9d26442e42297edd1e3abaf2a3bebdf4d038165d5e235f4f69f4d55cf630d1bae5a5f799658e3d32779663fcdac444e5ee49f2c1258303535075192e2c0b9f0
+
+git remote remove origin
+git remote add origin https://[personal-access-token]@github.com/username/repo_name.git
+tworzymy access token poprzez wejście na konto, do którego chcemy dodać commit. Przechodzimy do: Settings > Developer Settings > Personal Access Token > Tokens(classic) > Generate Token
+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
+
+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
+
+GMAIL ECRIS I APLIKACJA ECRIS:
+ecrisapptest@gmail.com
+sER932ECEcris2023!
+
+ecrisappsecondmail@gmail.com
+nWE932WuWebosta2017!
+
+ecrisappdb@gmail.com
+nWE932WuWebosta2017!
+
+BREVO ECRIS:
+ecrisapptest@gmail.com
+nWE932WuWebosta2017!
+
+FREEMYSQLHOSTING
+Serwer: sql7.freemysqlhosting.net
+Name: sql7644212
+Username: sql7644212
+Password: GJGU8fFDkk
+Port: 3306
+
+Plesk:
+https://185.157.82.125/login_up.php
+krystianwebosta
+5S?n786bd%7x0D3w2tmy809Ti@3
+
+Plesk DB User
+admin2
+5S?n786bd%7x0D3w2tmy809Ti@3
+
+SKSYSTEMHALE@gmail.com
+SK$YSTEMHALE12!
+
+GMAIL - SKSYSTEM -EN
+ensksystem@gmail.com
+SK$YSTEMHALE12!
+
+SERVICE: service_eqkonxq TEMPLATE: template_rnaih1a PKEY: X5jIZ34N-_80fsom3
+
+GMAIL - SKSYSTEM -DE
+sksystemde@gmail.com
+SK$YSTEMHALE12!
+
+SERVICE: service_1h6b5qq TEMPLATE: template_pltso3d PKEY: wsD33yFevKP3s4rn4
+
+GMAIL - SKSYSTEM -CS
+cssksystem@gmail.com
+SK$YSTEMHALE12!
+
+
+cz@sksystem.eu
+SERVICE: service_zx9pqk4 TEMPLATE: template_xrgny2l PKEY: K0t7xDkMIuuE7XauS
+
+
+
+
+SITE KEY:
+6Ldi05QlAAAAAPzULeEXsaGPHp0W27CpLaKY2gRs
+
+SECRET KEY:
+6Ldi05QlAAAAAOSj_gOd4zuVOFI2aRg4DGEVwvkS
+
+CHATGPTPLUS
+login:chatgpt@webosta.net
+hasło:#ChatGPTbilelektronik2022!
+
+Dzień dobry, jeśli po sprawdzeniu technicznie wszystko będzie dobrze to prosilibyśmy o listę odnośnie poprawek graficznych
+
+
+SKANER: 
+olxskaner@gmail.com
+$Skaner21!
+
+kolor do modala DDD :     background-color: rgb(220 252 231 / var(--tw-bg-opacity));
+ 
+WYSŁAĆ JUTRO:
+https://tailwindui.com/components/application-ui/overlays/modals
+Proponowałbym drugi modal od góry. Zamiast tekstu będą znajdowały się pytania tak jak jest to w aktualnych oknach. Na samym dole dwa przyciski, jeden do potwierdzenia czynnosci a drugi do zamknięcia okna.
+
+"hood_height": "Wysokość okapu(cm)",
+"height_of_ridge": "Wysokość kalenicy(cm)",
+"roof_slope": "Nachylenie dachu w °",
+"hall_area": "Powierzchnia hali(m²)",
+"project_details": "Szczegóły projektu",
+"firm": "Firma*",
+"gender": "Płeć*",
+"man": "Mężczyzna",
+"woman": "Kobieta",
+"address": "Adres*",
+"location": "Lokalizacja*",
+"language": "Język*",
+"polish": "Polski",
+"german": "Niemiecki",
+"french": "Francuski",
+"english": "Angielski",
+"polish": "Polski",
+"german": "Niemiecki",
+"dutch": "Holenderski",
+"email": "Email*",
+"function": "Funkcja*",
+"name_surname": "Imię i nazwisko*",
+"post_code": "Kod pocztowy*",
+"country": "Kraj*",
+"number": "Numer telefonu*",
+"start_construction": "Przewidywany początek budowy*",
+"delivery": "Dostawa jako zestaw(bez montażu)",
+
+"obtaining": "Możliwość uzyskania pozwolenia na budowę",
+"land": "Dostępna ziemia",
+"comment": "Komentarz-Życzenia-Pytania",
+"privacy_polici": "Tak, zgadzam się z polityką prywatności.",
+"send": "Wyślij"
+
+https://ecris-backend.onrender.com - url
+
+

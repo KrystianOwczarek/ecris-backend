@@ -8,9 +8,24 @@ import pdfRoute from "./pdfRoutes.js";
 import path from 'path';
 import mime from "mime";
 import bodyParser from "body-parser";
+import multer from 'multer';
+import uuidv4 from 'uuidv4';
 global.__dirname = path.resolve();
 
 dotenv.config();
+
+
+const storage = multer.diskStorage({
+    // destination: function (req, file, cb) {
+    //     cb(null, 'uploads')
+    // },
+    // filename: function (req, file, cb) {
+    //     cb(null, file.originalname)
+    // }
+})
+
+const upload = multer({ storage: storage }).array('file');
+
 
 //Database connection
 const pool = mysql.createPool({
@@ -1123,7 +1138,6 @@ app.post("/send", (req, res) => {
                 },
             ],
         };
-
         
         transporter.sendMail(mailOptions, function (err, data) {
             if (err) {
@@ -1168,7 +1182,6 @@ app.post("/send1", (req, res) => {
             },
         ],
     };
-
     transporter.sendMail(mailOptions, function (err, data) {
         if (err) {
             console.error('Błąd podczas wysyłania e-maila:', err);
@@ -1187,55 +1200,68 @@ app.post("/send1", (req, res) => {
 });
 
 app.post("/send2", (req, res) => {
-    //const conn = pool.getConnection();
-
 
     console.log('Received TECHNICAL (/send3) email data:', req.body);
 
-
-    const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
-    const attachment = fs.readFileSync(pathToAttachment).toString('base64');
-
-    const q = "SELECT Email FROM emails WHERE ID=2;";
-    pool.query(q, (err, data) => {
-        if (err) {
-            console.log(err);
-            return res.json(err);
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
         }
+        let attachments = [];
+        req.files.forEach((file) => {
+            const filePath = file.path;
+            const f = fs.readFileSync(filePath).toString('base64');
+            const attachment = {
+                content: f,
+                filename: `${file.originalname}`,
+                contentType: `${file.mimetype}`,
+                path: filePath
+            }
+            attachments.push(attachment)
+        })
+        
+    
+        const q = "SELECT Email FROM emails WHERE ID=2;";
+        pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
 
-        const recipientEmail = data[0].Email;
+            const recipientEmail = data[0].Email;
+
+            let mailOptions = {
+                from: process.env.EMAIL,
+                to: recipientEmail,
+                subject: `${req.body.name}`,
+                html: `${req.body.html}`,
+                attachments: attachments
+            
+            };
 
 
-
-    let mailOptions = {
-        from: process.env.EMAIL,
-        to: recipientEmail,
-        subject: `${req.body.name}`,
-        html: `${req.body.html}`,
-        attachments: [
-            {
-                content: attachment,
-                filename: `invoice${req.body.Ordernumber}.pdf`,
-                contentType: 'application/pdf',
-                path: pathToAttachment,
-            },
-        ],
-    };
-
-    transporter.sendMail(mailOptions, function (err, data) {
-        if (err) {
-            console.error('Błąd podczas wysyłania e-maila:', err);
-            res.json({
-                status: "fail",
+            transporter.sendMail(mailOptions, function (err, data) {
+                if (err) {
+                    console.error('Błąd podczas wysyłania e-maila:', err);
+                    res.json({
+                        status: "fail",
+                    });
+                } else {
+                    console.log("== Message Sent ==");
+                    res.json({
+                        status: "success",
+                    });
+                }
             });
-        } else {
-            console.log("== Message Sent ==");
-            res.json({
-                status: "success",
-            });
-        }
-    });
-    });
+        });
+    })
+
+    // const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
+    // const attachment = fs.readFileSync(pathToAttachment).toString('base64');
+
+    
 
     //conn.release();
 });
@@ -1246,45 +1272,66 @@ app.post("/send3", (req, res) => {
     console.log('Received TECHNICAL (/send4) email data:', req.body);
 
 
-    const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
-    const attachment = fs.readFileSync(pathToAttachment).toString('base64');
+    // const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
+    // const attachment = fs.readFileSync(pathToAttachment).toString('base64');
 
-    const q = "SELECT Email FROM emails WHERE ID=1;";
-    pool.query(q, (err, data) => {
-        if (err) {
-            console.log(err);
-            return res.json(err);
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
         }
 
-        const recipientEmail = data[0].Email;
+        let attachments = [];
+        req.files.forEach((file) => {
+            const filePath = file.path;
+            const f = fs.readFileSync(filePath).toString('base64');
+            const attachment = {
+                content: f,
+                filename: `${file.originalname}`,
+                contentType: `${file.mimetype}`,
+                path: filePath
+            }
+            attachments.push(attachment)
+        })
+
+        const q = "SELECT Email FROM emails WHERE ID=1;";
+        pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+
+            const recipientEmail = data[0].Email;
+
+            let mailOptions = {
+                from: process.env.EMAIL,
+                to: recipientEmail,
+                subject: `${req.body.name}`,
+                html: `${req.body.html}`,
+                attachments: attachments
+            
+            };
 
 
-
-
-    let mailOptions = {
-        from: process.env.EMAIL,
-        to:  recipientEmail,
-        subject: `${req.body.name}`,
-        html: `${req.body.html}`
-    };
-
-    transporter.sendMail(mailOptions, function (err, data) {
-        if (err) {
-            console.error('Błąd podczas wysyłania e-maila:', err);
-            res.json({
-                status: "fail",
+            transporter.sendMail(mailOptions, function (err, data) {
+                if (err) {
+                    console.error('Błąd podczas wysyłania e-maila:', err);
+                    res.json({
+                        status: "fail",
+                    });
+                } else {
+                    console.log("== Message Sent ==");
+                    res.json({
+                        status: "success",
+                    });
+                }
             });
-        } else {
-            console.log("== Message Sent ==");
-            res.json({
-                status: "success",
-            });
-        }
-    });
+        });
+    })
 });
 
 //conn.release();
-});
 
 //Console logs for validation
 app.listen(port, () => {
