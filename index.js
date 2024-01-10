@@ -30,9 +30,9 @@ const upload = multer({ storage: storage }).array('file');
 //Database connection
 const pool = mysql.createPool({
     host: "sql7.freemysqlhosting.net",
-    user: "sql7644212",
-    password: "GJGU8fFDkk",
-    database: "sql7644212",
+    user: "sql11675977",
+    password: "uzKKi5it6c",
+    database: "sql11675977",
     waitForConnections: true,
     connectionLimit: 20,
     queueLimit: 0,
