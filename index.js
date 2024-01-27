@@ -29,7 +29,7 @@ const upload = multer({ storage: storage }).array('file');
 
 //Database connection
 const pool = mysql.createPool({
-    host: "sql7.freemysqlhosting.net",
+    host: "sql11.freemysqlhosting.net",
     user: "sql11675977",
     password: "uzKKi5it6c",
     database: "sql11675977",
@@ -111,6 +111,7 @@ app.get("/orderNumbers", (req, res) => {
 });
 
 
+
 //Handle customize email addreses
 app.get("/emailadr", async (req, res) => {
     //const conn = pool.getConnection();
@@ -122,6 +123,98 @@ app.get("/emailadr", async (req, res) => {
                 return res.json(err);
             }
             return res.json(data);
+        });
+        //conn.release();
+});
+
+app.get("/pageLanguage", async (req, res) => {
+    //const conn = pool.getConnection();
+
+        const q = "SELECT language FROM pageLanguage";
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json(data);
+        });
+        //conn.release();
+});
+
+//Handle customize email addreses
+app.get("/emailToSend", async (req, res) => {
+    //const conn = pool.getConnection();
+
+        const q = "SELECT * FROM emailToSend";
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json(data);
+        })
+})
+
+app.get("/powerOfAttorney", async (req, res) => {
+    //const conn = pool.getConnection();
+    const q = "SELECT * FROM powerOfAttorney";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    })
+})
+
+app.get("/emailTemplate", async (req, res) => {
+    //const conn = pool.getConnection();
+    const q = "SELECT * FROM emailTemplate";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    })
+})
+
+app.get("/emailTitle", async (req, res) => {
+    //const conn = pool.getConnection();
+    const q = "SELECT * FROM emailTitle";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    })
+})
+
+app.put("/updateLink", async (req, res) => {
+    //const conn = pool.getConnection();
+        const q = `UPDATE aditset SET link='${req.body.link}' WHERE ID=1`;
+        
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json({ message: "Link update successfully" });
+        });
+        //conn.release();
+});
+
+app.post("/changePageLanguage", async (req, res) => {
+    //const conn = pool.getConnection();
+        const q = `UPDATE pageLanguage SET language='${req.body.langNumber}' WHERE id=1`;
+        
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json({ message: "Link update successfully" });
         });
         //conn.release();
 });
@@ -141,6 +234,22 @@ app.put("/enableService/:id", async (req, res) => {
         //conn.release();
 });
 
+
+app.put("/enableRequired/:id", async (req, res) => {
+    //const conn = pool.getConnection();
+        const { id } = req.params;
+        const q = `UPDATE aditset SET requirement = 1 WHERE ID = ${id}`;
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json({ message: "Service enabled successfully" });
+        });
+        //conn.release();
+});
+
+
 app.put("/disableService/:id", async (req, res) => {
     //const conn = pool.getConnection();
         const { id } = req.params;
@@ -155,10 +264,24 @@ app.put("/disableService/:id", async (req, res) => {
         //conn.release();
 });
 
+app.put("/disableRequired/:id", async (req, res) => {
+    //const conn = pool.getConnection();
+        const { id } = req.params;
+        const q = `UPDATE aditset SET requirement = 0 WHERE ID = ${id}`;
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json({ message: "Service disabled successfully" });
+        });
+        //conn.release();
+});
+
 app.get("/aditset", async (req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT Servive, Status FROM aditset";
+    const q = "SELECT * FROM aditset";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -173,7 +296,7 @@ app.get("/aditset", async (req, res) => {
 app.get("/aditset1", async (req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT Status FROM aditset";
+    const q = "SELECT * FROM aditset";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -187,8 +310,85 @@ app.get("/aditset1", async (req, res) => {
 
 
 //-----------------------------------------GET OBJECTS------------------------------------------------------------------
+app.get("/typeSendingMail", async(req, res) => {
+    const q = "SELECT * FROM typeSendingMail";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
 app.get("/countries", async(req, res) => {
-    const q = "SELECT * FROM countries";
+    const q = "SELECT * FROM countries ORDER BY kolejnosc";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/countryList", async(req, res) => {
+    const q = "SELECT * FROM countryList ORDER BY kolejnosc";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/getCountryMailMessage", async(req, res) => {
+    const q = "SELECT * FROM countryMailMessage";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/getCitizenshipMailMessage", async(req, res) => {
+    const q = "SELECT * FROM citizenshipMailMessage";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/getCountryPDFMessage", async(req, res) => {
+    const q = "SELECT * FROM countryPDFMessage";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/getCitizenshipPDFMessage", async(req, res) => {
+    const q = "SELECT * FROM citizenshipPDFMessage";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/globalCountryGetComment", async(req, res) => {
+    const q = "SELECT * FROM globalCountryCommentary";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -200,9 +400,42 @@ app.get("/countries", async(req, res) => {
     //conn.release();
 });
 
+app.get("/globalGetTatCountry", async(req, res) => {
+    const q = "SELECT * FROM globalTatCountry";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/globalGetTatCitizenship", async(req, res) => {
+    const q = "SELECT * FROM globalTatCitizenship";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
 //get all headers from first page
 app.get("/fPageHeaders", async(req, res) => {
     const q = "SELECT * FROM fPageHeaders";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/fPageHeadersId", async(req, res) => {
+    const q = `SELECT * FROM fPageHeaders WHERE id=${req.body.id}`;
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -224,6 +457,17 @@ app.get("/sPageHeaders", async(req, res) => {
     });
 });
 
+app.get("/sPageHeadersId", async(req, res) => {
+    const q = `SELECT * FROM sPageHeaders WHERE id=${req.body.id}`;
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
 //get all headers from third page
 app.get("/tPageHeaders", async(req, res) => {
     const q = "SELECT * FROM tPageHeaders";
@@ -236,10 +480,21 @@ app.get("/tPageHeaders", async(req, res) => {
     });
 });
 
+app.get("/tPageHeadersId", async(req, res) => {
+    const q = `SELECT * FROM tPageHeaders WHERE id=${req.body.id}`;
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
 app.get("/citizenships", async (req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT * FROM citizenships";
+    const q = "SELECT * FROM citizenships ORDER BY kolejnosc";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -255,7 +510,7 @@ app.get("/citizenships", async (req, res) => {
 app.get("/alv", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT * FROM alv";
+    const q = "SELECT * FROM alv ORDER BY kolejnosc";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -270,7 +525,7 @@ app.get("/alv", async(req, res) => {
 app.get("/apostille", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT * FROM apostille";
+    const q = "SELECT * FROM apostille ORDER BY kolejnosc";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -285,7 +540,7 @@ app.get("/apostille", async(req, res) => {
 app.get("/certificate", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT * FROM certificate";
+    const q = "SELECT * FROM certificate ORDER BY kolejnosc";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -300,7 +555,7 @@ app.get("/certificate", async(req, res) => {
 app.get("/delivery", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "SELECT * FROM delivery";
+    const q = "SELECT * FROM delivery ORDER BY kolejnosc";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -319,7 +574,7 @@ app.get("/delivery", async(req, res) => {
 app.post("/addcountries", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO countries(`country_name`,`id`,`tat`,`price_eu`,`price_gb`,`price_bu`,`price_cz`,`price_pl`,`price_dk`,`price_ro`,`price_se`,`comment`,`comment2`, `requirement`) VALUES (?)";
+    const q = "INSERT INTO countries(`country_name`,`id`,`tat`,`price_eu`,`price_gb`,`price_bu`,`price_cz`,`price_pl`,`price_dk`,`price_ro`,`price_se`,`comment`,`comment2`, `email_text`, `pdf_text`, `requirement`, `checkboxStatus`, `addtat`, `subtat`,`kolejnosc`) VALUES (?)";
 
     const values = [
         req.body.country_name,
@@ -335,21 +590,133 @@ app.post("/addcountries", async(req, res) => {
         req.body.price_se,
         req.body.comment,
         req.body.comment2,
+        req.body.email_text,
+        req.body.pdf_text,
         req.body.requirement,
+        req.body.checkboxStatus,
+        req.body.increaseTat,
+        req.body.decreaseTat,
+        req.body.order_table
     ];
 
     pool.query(q, [values], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
-app.put("/updatefPageHeader", async(req, res) => {
+app.post("/addcountriesList", async(req, res) => {
+    //const conn = pool.getConnection();
+
+    const q = "INSERT INTO countryList(`country`,`vat`,`kolejnosc`,`id`) VALUES (?)";
+
+    const values = [
+        req.body.country,
+        req.body.vat,
+        req.body.order_table,
+        req.body.id,
+    ];
+
+    pool.query(q, [values], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+});
+
+app.post("/globalCountryCommentary", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE globalCountryCommentary SET comment='${req.body.newcomment}' WHERE comment='${req.body.oldcomment}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/countryMailMessage", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE countryMailMessage SET mailMessage='${req.body.newmessage}' WHERE mailMessage='${req.body.oldmessage}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/citizenshipMailMessage", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE citizenshipMailMessage SET mailMessage='${req.body.newmessage}' WHERE mailMessage='${req.body.oldmessage}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/countryPDFMessage", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE countryPDFMessage SET pdfMessage='${req.body.newmessage}' WHERE pdfMessage='${req.body.oldmessage}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/citizenshipPDFMessage", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE citizenshipPDFMessage SET pdfMessage='${req.body.newmessage}' WHERE pdfMessage='${req.body.oldmessage}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/typeSendingMailUpdate", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE typeSendingMail SET mailStatus=${req.body.mailStatus} WHERE id=1`;
+    console.log(q)
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/globalTatCountry", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE globalTatCountry SET addtat='${req.body.addtat}', subtat='${req.body.subtat}' WHERE id=1`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/globalTatCitizenship", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `UPDATE globalTatCitizenship SET addtat='${req.body.addtat}', subtat='${req.body.subtat}' WHERE id=1`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.post("/addLanguageFPageHeader", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `INSERT INTO fPageHeaders (language,id) VALUES ('${req.body.language}','${req.body.id}')`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+});
+
+app.put("/updatefPageHeader", async (req, res) => {
     //const conn = pool.getConnection();
     const bookId = req.params.id;
-    const q = "UPDATE `fPageHeaders` SET `jobSeeker1`=?,`jobSeeker2`=?,`jobSeeker3`=?,`jobSeeker4`=?,`jobSeeker5`=?,`jobSeeker6`=?,`chooseCountries`=?,`countryHeader`=?,`tatHeader`=?,`priceHeader`=?,`chooseCitizenship`=?,`citHeader`=?,`repDelHeader`=?,`detailsHeader`=?,`addLangHeader`=?,`oServicesHeader`=?,`addTatHeader`=?,`certTransHeader`=?,`apostilleHeader`=?,`costHeader`=?,`costStatesHeader`=?,`costReportHeader`=?,`costAddTatHeader`=?,`costCertHeader`=?,`costApostilleHeader`=?,`costSummaryHeader`=?,`costSummaryText`=?,`costAddTatText`=?,`costTotalHeader`=?,`includeTaxText`=?,`id`=? WHERE id=1";
+    const q = 'UPDATE fPageHeaders SET `jobSeeker1`=?, `jobSeeker2`=?, `jobSeeker3`=?, `jobSeeker4`=?, `jobSeeker5`=?, `jobSeeker6`=?, `chooseCountries`=?, `countryHeader`=?, `tatHeader`=?, `priceHeader`=?, `chooseCitizenship`=?, `citHeader`=?, `repDelHeader`=?, `detailsHeader`=?, `optionalServicesHeader`=?, `optionalServicesComment`=?, `addLangHeader`=?, `addLangComment`=?, `oServicesHeader`=?, `addTatHeader`=?, `certTransHeader`=?, `certTransComment`=?, `apostilleHeader`=?, `apostilleComment`=?, `costHeader`=?, `costStatesHeader`=?, `costReportHeader`=?, `costAddTatHeader`=?, `costCertHeader`=?, `costApostilleHeader`=?, `costSummaryHeader`=?, `costSummaryText`=?, `costAddTatText`=?, `costTotalHeader`=?, `includeTaxText`=?, `chargeHeader`=?, `turnarountTAT`=?, `additionalServices`=? WHERE `id`=?';
 
     const values = [
         req.body.jobSeeker1,
@@ -366,11 +733,16 @@ app.put("/updatefPageHeader", async(req, res) => {
         req.body.citHeader,
         req.body.repDelHeader,
         req.body.detailsHeader,
+        req.body.optionalServicesHeader,
+        req.body.optionalServicesComment,
         req.body.addLangHeader,
+        req.body.addLangComment,
         req.body.oServicesHeader,
         req.body.addTatHeader,
         req.body.certTransHeader,
+        req.body.certTransComment,
         req.body.apostilleHeader,
+        req.body.apostilleComment,
         req.body.costHeader,
         req.body.costStatesHeader,
         req.body.costReportHeader,
@@ -382,22 +754,34 @@ app.put("/updatefPageHeader", async(req, res) => {
         req.body.costAddTatText,
         req.body.costTotalHeader,
         req.body.includeTaxText,
-        req.body.id,
+        req.body.chargeHeader,
+        req.body.turnarountTAT,
+        req.body.additionalServices,
     ];
 
-    pool.query(q, [...values, bookId], (err, data) => {
+    pool.query(q, [...values, req.body.id], (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        return res.json(data);
+    });
+});
+
+app.post("/addLanguageSPageHeader", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `INSERT INTO sPageHeaders (language,id) VALUES ('${req.body.language}','${req.body.id}')`;
+
+    pool.query(q, (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
     //conn.release();
 });
 
-
-
 app.put("/updateSPageHeader", async(req, res) => {
     //const conn = pool.getConnection();
     const bookId = req.params.id;
-    const q = "UPDATE `sPageHeaders` SET `provideHeader`=?,`title`=?,`titleComment`=?,`forename`=?,`forenameComment`=?,`middleName`=?,`middleNameComment`=?,`surname`=?,`surnameComment`=?,`surnameBirth`=?,`surnameBirthComment`=?,`birthDate`=?,`birthDateComment`=?,`birthTown`=?,`birthTownComment`=?,`birthCountry`=?,`birthCountryComment`=?,`montherName`=?,`montherNameComment`=?,`motherMName`=?,`motherMNameComment`=?,`idNumber`=?,`idNumberComment`=?,`currentAdress`=?,`addressLine1`=?,`addressLine1Comment`=?,`addressLine2`=?,`addressLine2Comment`=?,`country`=?,`countryComment`=?,`emailAddress`=?,`emailAddressComment`=?,`confEmailAddress`=?,`confEmailAddressComment`=?,`phoneNumber`=?,`phoneNumberComment`=?,`uploadScan`=?,`uploadScanComment`=?,`indedRecipent`=?,`indedRecipentComment`=?,`addComment`=?,`addCommentComment`=?,`uploadFiles`=?,`id`=?,`fatherName`=?,`fatherNameComment`=? WHERE id=1";
+    const q = 'UPDATE `sPageHeaders` SET `provideHeader`=?,`title`=?,`titleComment`=?,`forename`=?,`forenameComment`=?,`middleName`=?,`middleNameComment`=?,`surname`=?,`surnameComment`=?,`surnameBirth`=?,`surnameBirthComment`=?,`birthDate`=?,`birthDateComment`=?,`birthTown`=?,`birthTownComment`=?,`birthCountry`=?,`birthCountryComment`=?,`montherName`=?,`montherNameComment`=?,`motherMName`=?,`motherMNameComment`=?,`idNumber`=?,`idNumberComment`=?,`currentAdress`=?,`addressLine1`=?,`addressLine1Comment`=?,`addressLine2`=?,`addressLine2Comment`=?,`country`=?,`countryComment`=?,`emailAddress`=?,`emailAddressComment`=?,`confEmailAddress`=?,`confEmailAddressComment`=?,`phoneNumber`=?,`phoneNumberComment`=?,`uploadScan`=?,`uploadScanComment`=?,`indedRecipent`=?,`indedRecipentComment`=?,`addComment`=?,`addCommentComment`=?,`uploadFiles`=?,`id`=?,`fatherName`=?,`fatherNameComment`=?,`mr`=?,`ms`=? WHERE `id`=?';
 
     const values = [
         req.body.provideHeader,
@@ -446,9 +830,22 @@ app.put("/updateSPageHeader", async(req, res) => {
         req.body.id,
         req.body.fatherName,
         req.body.fatherNameComment,
+        req.body.mr,
+        req.body.ms,
     ];
 
-    pool.query(q, [...values, bookId], (err, data) => {
+    pool.query(q, [...values, req.body.id], (err, data) => {
+        if (err) console.log(err) 
+        return res.json(data);
+    });
+    //conn.release();
+});
+
+app.post("/addLanguageTPageHeader", async(req, res) => {
+    //const conn = pool.getConnection();
+    const q = `INSERT INTO tPageHeaders (language,id) VALUES ('${req.body.language}','${req.body.id}')`;
+
+    pool.query(q, (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
@@ -458,7 +855,7 @@ app.put("/updateSPageHeader", async(req, res) => {
 app.put("/updateTPageHeader", async(req, res) => {
     //const conn = pool.getConnection();
     const bookId = req.params.id;
-    const q = "UPDATE `tPageHeaders` SET `orderSummary`=?,`checkData`=?,`selectedOpt`=?,`addComment`=?,`charge`=?,`tat`=?,`personalData`=?,`address`=?,`privacyPolicy`=?,`id`=? WHERE id=1";
+    const q = 'UPDATE `tPageHeaders` SET `orderSummary`=?,`checkData`=?,`selectedOpt`=?,`addComment`=?,`charge`=?,`tat`=?,`personalData`=?,`address`=?,`privacyPolicy`=?,`id`=?,`announcement`=? WHERE id=?';
 
     const values = [
         req.body.orderSummary,
@@ -471,19 +868,19 @@ app.put("/updateTPageHeader", async(req, res) => {
         req.body.address,
         req.body.privacyPolicy,
         req.body.id,
+        req.body.announcement
     ];
 
-    pool.query(q, [...values, bookId], (err, data) => {
+    pool.query(q, [...values, req.body.id], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-    //conn.release();
 });
 
 app.post("/addcitizenships", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO citizenships(`citizenship`,`TAT`,`commentCit`,`email_text`,`pdf_text`,`GTC`) VALUES (?)";
+    const q = "INSERT INTO citizenships(`citizenship`,`TAT`,`commentCit`,`email_text`,`pdf_text`,`GTC`,`addtat`,`subtat`,`ID`,`influCit`, `VAT`,`kolejnosc`) VALUES (?)";
 
     const values = [
         req.body.citizenship,
@@ -491,7 +888,13 @@ app.post("/addcitizenships", async(req, res) => {
         req.body.commentCit,
         req.body.email_text,
         req.body.pdf_text,
-        req.body.GTC
+        req.body.GTC,
+        req.body.increaseTat,
+        req.body.decreaseTat,
+        req.body.id,
+        req.body.influCit,
+        req.body.VAT,
+        req.body.order_table,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -505,7 +908,7 @@ app.post("/addcitizenships", async(req, res) => {
 app.post("/addalv", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO alv(`language`,`id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
+    const q = "INSERT INTO alv(`language`,`id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`email_text`,`pdf_text`,`kolejnosc`) VALUES (?)";
 
     const values = [
         req.body.language,
@@ -519,6 +922,9 @@ app.post("/addalv", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
+        req.body.email_text,
+        req.body.pdf_text,
+        req.body.order_table,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -532,7 +938,7 @@ app.post("/addalv", async(req, res) => {
 app.post("/addappostile", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO apostille(`type`,`tatApost`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
+    const q = "INSERT INTO apostille(`type`,`tatApost`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`id`,`comment`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
 
     const values = [
         req.body.type,
@@ -544,7 +950,12 @@ app.post("/addappostile", async(req, res) => {
         req.body.pricePL,
         req.body.priceDK,
         req.body.priceRO,
-        req.body.priceSE
+        req.body.priceSE,
+        req.body.id,
+        req.body.comment,
+        req.body.email_text,
+        req.body.order_table,
+        req.body.pdf_text,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -558,9 +969,10 @@ app.post("/addappostile", async(req, res) => {
 app.post("/adddelivery", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO delivery(`delivery_option`,`delTat`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`type`) VALUES (?)";
+    const q = "INSERT INTO delivery(`id`,`delivery_option`,`delTat`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`type`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
 
     const values = [
+        req.body.id,
         req.body.delivery_option,
         req.body.delTat,
         req.body.priceEU,
@@ -571,7 +983,10 @@ app.post("/adddelivery", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
-        req.body.type
+        req.body.type,
+        req.body.email_text,
+        req.body.order_table,
+        req.body.pdf_text,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -585,7 +1000,7 @@ app.post("/adddelivery", async(req, res) => {
 app.post("/addcertificate", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO certificate(`language`,`tatCER`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`) VALUES (?)";
+    const q = "INSERT INTO certificate(`language`,`tatCER`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`id`,`comment`,`influCer`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
 
     const values = [
         req.body.language,
@@ -598,6 +1013,12 @@ app.post("/addcertificate", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
+        req.body.id,
+        req.body.comment,
+        req.body.influCer,
+        req.body.email_text,
+        req.body.order_table,
+        req.body.pdf_text,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -608,7 +1029,7 @@ app.post("/addcertificate", async(req, res) => {
 
 app.post("/addService", async(req, res) => {
 
-    const q = `CREATE TABLE ${req.body.header} ( Type VARCHAR(255), Tat INT(11), priceEU INT(11), priceGB INT(11), priceBU INT(11), priceCZ INT(11),pricePL INT(11), priceDK INT(11), priceRO INT(11), priceSE INT(11), id INT(11) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
+    const q = `CREATE TABLE ${req.body.header} ( Type VARCHAR(255), Tat INT(11), priceEU INT(11), priceGB INT(11), priceBU INT(11), priceCZ INT(11),pricePL INT(11), priceDK INT(11), priceRO INT(11), priceSE INT(11), comment LONGTEXT, email_text LONGTEXT, visibility INT(11), selected INT(11), multiplicationPrice INT(11), multiplicationTat INT(11), visibilityASelection LONGTEXT, choiceAfterChoice LONGTEXT,pdfText LONGTEXT, bubbleText LONGTEXT, kolejnosc INT(11), id VARCHAR(255) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
     pool.query(q, (err, data) => {
         if (err) return res.send(err);
@@ -640,7 +1061,7 @@ app.post('/columnsNames', async(req, res) => {
 })
 
 app.post('/columnsValues', async(req, res) => {
-    const q = `SELECT * FROM ${req.body.url}`;
+    const q = `SELECT * FROM ${req.body.url} ORDER BY kolejnosc`;
 
     pool.query(q, (err, data) => {
         if (err) {
@@ -653,7 +1074,7 @@ app.post('/columnsValues', async(req, res) => {
 
 app.post('/columnsValues/:id', async(req, res) => {
     const { id } = req.params;
-    const q = `SELECT * FROM ${req.body.url} WHERE id=${id}`;
+    const q = `SELECT * FROM ${req.body.url} WHERE id='${id}'`;
 
     pool.query(q, (err, data) => {
         if (err) {
@@ -671,7 +1092,7 @@ app.put('/updateColumnsValues/:id', async(req, res) => {
     for(const key in obj) {
         array.push(`${key}=?`)
     }
-    const q = `UPDATE ${req.body.header} SET ${array.toString()}  WHERE id=${id}`;
+    const q = `UPDATE ${req.body.header} SET ${array.toString()}  WHERE id='${id}'`;
     const values = Object.values(obj);
 
 
@@ -694,6 +1115,8 @@ app.post('/addColumnsValues', async(req, res) => {
         values.push(req.body.values[key]);
     }
     values.push(req.body.id);
+
+
     pool.query(q, [values], (err, data) => {
         if (err) {
             console.log(err);
@@ -704,11 +1127,19 @@ app.post('/addColumnsValues', async(req, res) => {
 })
 
 app.post('/newServices', async(req, res) => {
-    const q = 'INSERT INTO `newServices`(`allServices`) VALUES (?)';
+    const q = 'INSERT INTO newServices (`allServices`,`serviceVisibility`,`requirement`,`multiplicity`,`inclusionTat`,`CrcOrAsTat`,`multiplicationPrice`,`multiplicationTat`,`bubbleText`) VALUES (?)';
 
     const values = [
-        req.body.allServices
-    ];
+        req.body.allServices,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        ''
+    ];  
 
     pool.query(q,[values], (err, data) => {
         if(err) return res.send(err);
@@ -734,6 +1165,105 @@ app.post('/updateNewService', async(req, res) => {
     })
 })
 
+app.post('/updateNewServiceVisibility', async(req, res) => {
+    const q = `UPDATE newServices SET serviceVisibility='${req.body.visibility}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceRequirement', async(req, res) => {
+    const q = `UPDATE newServices SET requirement='${req.body.requirement}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceMultiplicity', async(req, res) => {
+    const q = `UPDATE newServices SET multiplicity='${req.body.multiplicity}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceInclusionTat', async(req, res) => {
+    const q = `UPDATE newServices SET inclusionTat='${req.body.inclusionTat}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceCrcOrAsTat', async(req, res) => {
+    const q = `UPDATE newServices SET CrcOrAsTat='${req.body.CrcOrAsTat}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceMultiplicationPrice', async(req, res) => {
+    const q = `UPDATE newServices SET multiplicationPrice='${req.body.multiplicationPrice}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceMultiplicationTat', async(req, res) => {
+    const q = `UPDATE newServices SET multiplicationTat='${req.body.multiplicationTat}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateNewServiceBubbleText', async(req, res) => {
+    const q = `UPDATE newServices SET bubbleText='${req.body.bubbleText}' WHERE allServices='${req.body.oldname}'`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updatePowerOfAttorney', async(req, res) => {
+    const q = `UPDATE powerOfAttorney SET header='${req.body.header}',firstPieceOfText='${req.body.firstPieceOfText}',registers='${req.body.registers}',secondPieceOfText='${req.body.secondPieceOfText}' WHERE id=${req.body.id}`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateEmailTemplate', async(req, res) => {
+    const q = `UPDATE emailTemplate SET header='${req.body.header}',text='${req.body.text}' WHERE id=${req.body.id}`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
+app.post('/updateEmailTitle', async(req, res) => {
+    const q = `UPDATE emailTitle SET title='${req.body.title}',title2='${req.body.title2}' WHERE id=${req.body.id}`;
+
+    pool.query(q, (err, data) => {
+        if(err) return res.send(err);
+        return res.json(data);
+    })
+})
+
 //-----------------------------------------DELETING---------------------------------------------------------
 
 app.delete("/delete/:id", async(req, res) => {
@@ -741,6 +1271,21 @@ app.delete("/delete/:id", async(req, res) => {
 
     const bookId = req.params.id;
     const q = "DELETE FROM countries WHERE id = ?";
+
+    pool.query(q, [bookId], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+
+    //conn.release();
+});
+
+
+app.delete("/deleteCountryList/:id", async(req, res) => {
+    //const conn = pool.getConnection();
+
+    const bookId = req.params.id;
+    const q = "DELETE FROM countryList WHERE id = ?";
 
     pool.query(q, [bookId], (err, data) => {
         if (err) return res.send(err);
@@ -853,7 +1398,7 @@ app.post("/deleteValues/:id", async(req, res) => {
 app.post("/orderNumbers", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO ordernumbers(`id`) VALUES ('')";
+    const q = `INSERT INTO ordernumbers (id) VALUES (${req.body.id})`;
 
 
     pool.query(q, (err, data) => {
@@ -868,7 +1413,7 @@ app.put("/countries/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE countries SET `country_name`= ?, id = ?, `tat`= ?, `price_eu`= ?, `price_gb`= ?, `price_bu`= ?, `price_cz`= ?, `price_pl`= ?, `price_dk`= ?, `price_ro`= ?, `price_se`= ?, `comment`= ?, `comment2`= ?, `requirement`=?  WHERE id = ?";
+    const q = "UPDATE countries SET `country_name`= ?, id = ?, `tat`= ?, `price_eu`= ?, `price_gb`= ?, `price_bu`= ?, `price_cz`= ?, `price_pl`= ?, `price_dk`= ?, `price_ro`= ?, `price_se`= ?, `comment`= ?, `comment2`= ?, `email_text`= ?, `pdf_text`= ?, `requirement`=?, `checkboxStatus`=?, `addtat`=?, `subtat`=?,`kolejnosc`=? WHERE id = ?";
 
     const values = [
         req.body.country_name,
@@ -884,9 +1429,14 @@ app.put("/countries/:id", async(req, res) => {
         req.body.price_se,
         req.body.comment,
         req.body.comment2,
+        req.body.email_text,
+        req.body.pdf_text,
         req.body.requirement,
+        req.body.checkboxStatus,
+        req.body.increaseTat,
+        req.body.decreaseTat,
+        req.body.order_table
     ];
-
     pool.query(q, [...values, bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
@@ -895,22 +1445,44 @@ app.put("/countries/:id", async(req, res) => {
     //conn.release();
 });
 
+app.put("/updateCountryList/:id", async(req, res) => {
+    //const conn = pool.getConnection();
+
+    const bookId = req.params.id;
+    const q = "UPDATE countryList SET `country`=?,`vat`=?,`kolejnosc`=?,`id`=? WHERE id = ?";
+
+    const values = [
+        req.body.country,
+        req.body.vat,
+        req.body.order_table,
+        req.body.id,
+    ];
+    pool.query(q, [...values, bookId], (err, data) => {
+        if (err) return res.send(err);
+        return res.json(data);
+    });
+});
+
 
 app.put("/citizenships/:id", async (req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
 
-    const q = "UPDATE citizenships SET `ID`= ?, `citizenship`= ?, `TAT`= ?, `commentCit`= ?, `email_text`= ?, `pdf_text`= ?, `GTC`= ? WHERE ID = ?";
+    const q = "UPDATE citizenships SET  `citizenship`= ?, `TAT`= ?, `commentCit`= ?, `email_text`= ?, `pdf_text`= ?, `GTC`= ?, `addtat`=?, `subtat`=?, `ID`= ?, `influCit`=?, `kolejnosc`=? WHERE ID = ?";
 
     const values = [
-        req.body.ID,
         req.body.citizenship,
         req.body.TAT,
         req.body.commentCit,
         req.body.email_text,
         req.body.pdf_text,
-        req.body.GTC
+        req.body.GTC,
+        req.body.increaseTat,
+        req.body.decreaseTat,
+        req.body.ID,
+        req.body.influCit,
+        req.body.order_table
     ];
 
     pool.query(q, [...values,bookId], (err, data) => {
@@ -945,7 +1517,7 @@ app.put("/alv/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE alv SET `language`= ?, `AddTAT`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=? WHERE `id` = ?";
+    const q = "UPDATE alv SET `language`= ?, `AddTAT`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `email_text`=?,`pdf_text`=?,`kolejnosc`=? WHERE `id` = ?";
 
     const values = [
         req.body.language,
@@ -958,7 +1530,10 @@ app.put("/alv/:id", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
-        req.body.id
+        req.body.id,
+        req.body.email_text,
+        req.body.pdf_text,
+        req.body.order_table
     ];
 
     pool.query(q, [...values,bookId], (err, data) => {
@@ -973,7 +1548,7 @@ app.put("/apostille/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE apostille SET `type`= ?, `tatApost`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=? WHERE `id` = ?";
+    const q = "UPDATE apostille SET `type`= ?, `tatApost`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `comment`=?, `email_text`=?,`kolejnosc`=?,`pdf_text`=? WHERE `id` = ?";
 
     const values = [
         req.body.type,
@@ -986,7 +1561,11 @@ app.put("/apostille/:id", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
-        req.body.id
+        req.body.id,
+        req.body.comment,
+        req.body.email_text,
+        req.body.order_table,
+        req.body.pdf_text
     ];
 
     pool.query(q, [...values,bookId], (err, data) => {
@@ -1001,7 +1580,7 @@ app.put("/certificate/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE certificate SET `language`= ?, `tatCER`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=? WHERE `id` = ?";
+    const q = "UPDATE certificate SET `language`= ?, `tatCER`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `comment`=?, `influCer`=?, `email_text`=?,`kolejnosc`=?,`pdf_text`=? WHERE `id` = ?";
 
     const values = [
         req.body.language,
@@ -1014,10 +1593,15 @@ app.put("/certificate/:id", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
-        req.body.id
+        req.body.id,
+        req.body.comment,
+        req.body.influCer,
+        req.body.email_text,
+        req.body.order_table,
+        req.body.pdf_text,
     ];
 
-    pool.query(q, [...values,bookId], (err, data) => {
+    pool.query(q, [...values, bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
@@ -1029,7 +1613,7 @@ app.put("/delivery/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE delivery SET `id`= ?, `delivery_option`= ?, `delTat`= ?,`priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `type`= ? WHERE `id` = ?";
+    const q = "UPDATE delivery SET `id`= ?, `delivery_option`= ?, `delTat`= ?,`priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `type`= ?, `email_text`=?,`kolejnosc`=?,`pdf_text`=? WHERE `id` = ?";
 
     const values = [
         req.body.id,
@@ -1043,7 +1627,10 @@ app.put("/delivery/:id", async(req, res) => {
         req.body.priceDK,
         req.body.priceRO,
         req.body.priceSE,
-        req.body.type
+        req.body.type,
+        req.body.email_text,
+        req.body.order_table,
+        req.body.pdf_text,
     ];
 
     pool.query(q, [...values,bookId], (err, data) => {
@@ -1107,11 +1694,19 @@ app.post("/send", (req, res) => {
     //const conn = pool.getConnection();
 
 
-    console.log('Received CLIENT (/send) email data:', req.body);
+    //console.log('Received CLIENT (/send) email data:', req.body);
 
 
     const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
+    const pathToAttachment2 = path.join(global.__dirname, `authorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment3 = path.join(global.__dirname, `ALVAuthorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment4 = path.join(global.__dirname, `ApostilleAuthorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment5 = path.join(global.__dirname, `CertificateAuthorization${req.body.Ordernumber}.pdf`);
     const attachment = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment2 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment3 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment4 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment5 = fs.readFileSync(pathToAttachment).toString('base64');
 
     const q = "SELECT Email FROM emails WHERE ID=3;";
     pool.query(q, (err, data) => {
@@ -1121,8 +1716,6 @@ app.post("/send", (req, res) => {
         }
 
         const recipientEmail = data[0].Email;
-
-
 
         let mailOptions = {
             from: `ecrisapptest@gmail.com`,
@@ -1136,8 +1729,33 @@ app.post("/send", (req, res) => {
                     contentType: 'application/pdf',
                     path: pathToAttachment,
                 },
+                {
+                    content: attachment2,
+                    filename: `authorization${req.body.Ordernumber}.pdf`,
+                    contentType: 'application/pdf',
+                    path: pathToAttachment2,
+                },
+                {
+                    content: attachment3,
+                    filename: `ALVAuthorization${req.body.Ordernumber}.pdf`,
+                    contentType: 'application/pdf',
+                    path: pathToAttachment3,
+                },
+                {
+                    content: attachment4,
+                    filename: `ApostilleAuthorization${req.body.Ordernumber}.pdf`,
+                    contentType: 'application/pdf',
+                    path: pathToAttachment4,
+                },
+                {
+                    content: attachment5,
+                    filename: `CertificateAuthorization${req.body.Ordernumber}.pdf`,
+                    contentType: 'application/pdf',
+                    path: pathToAttachment5,
+                }
             ],
         };
+
         
         transporter.sendMail(mailOptions, function (err, data) {
             if (err) {
@@ -1156,15 +1774,65 @@ app.post("/send", (req, res) => {
     //conn.release();
 });
 
+app.post("/saveDataForEmail", async(req, res) => {
+    //const conn = pool.getConnection();
+    const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
+    const pathToAttachment2 = path.join(global.__dirname, `authorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment3 = path.join(global.__dirname, `ALVAuthorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment4 = path.join(global.__dirname, `ApostilleAuthorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment5 = path.join(global.__dirname, `CertificateAuthorization${req.body.Ordernumber}.pdf`);
+    const attachment = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment2 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment3 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment4 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment5 = fs.readFileSync(pathToAttachment).toString('base64');
+
+    const q = "INSERT INTO emailToSend (`Ordernumber`,`name`,`email`,`message`,`html`,`attachment`,`attachment2`) VALUES (?)";
+
+    const values = [
+        req.body.Ordernumber,
+        req.body.name,
+        req.body.email,
+        req.body.message,
+        req.body.html,
+        attachment,
+        attachment2,
+        attachment3,
+        attachment4,
+        attachment5,
+    ];
+    pool.query(q, [values], (err, data) => {
+        if (err) {
+            console.error('Błąd podczas wysyłania e-maila:', err);
+            res.json({
+                status: "fail",
+            });
+        } else {
+            console.log("== Message Sent ==");
+            res.json({
+                status: "success",
+            });
+        }
+    });
+});
+
 app.post("/send1", (req, res) => {
     //const conn = pool.getConnection();
 
 
-    console.log('Received CLIENT (/send1) email data:', req.body);
+    //console.log('Received CLIENT (/send1) email data:', req.body);
 
 
     const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
+    const pathToAttachment2 = path.join(global.__dirname, `authorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment3 = path.join(global.__dirname, `ALVAuthorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment4 = path.join(global.__dirname, `ApostilleAuthorization${req.body.Ordernumber}.pdf`);
+    const pathToAttachment5 = path.join(global.__dirname, `CertificateAuthorization${req.body.Ordernumber}.pdf`);
     const attachment = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment2 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment3 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment4 = fs.readFileSync(pathToAttachment).toString('base64');
+    const attachment5 = fs.readFileSync(pathToAttachment).toString('base64');
 
 
 
@@ -1180,8 +1848,39 @@ app.post("/send1", (req, res) => {
                 contentType: 'application/pdf',
                 path: pathToAttachment,
             },
+            {
+                content: attachment2,
+                filename: `authorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment2,
+            },
+            {
+                content: attachment2,
+                filename: `authorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment2,
+            },
+            {
+                content: attachment3,
+                filename: `ALVAuthorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment3,
+            },
+            {
+                content: attachment4,
+                filename: `ApostilleAuthorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment4,
+            },
+            {
+                content: attachment5,
+                filename: `CertificateAuthorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment5,
+            }
         ],
     };
+
     transporter.sendMail(mailOptions, function (err, data) {
         if (err) {
             console.error('Błąd podczas wysyłania e-maila:', err);
@@ -1199,17 +1898,105 @@ app.post("/send1", (req, res) => {
     //conn.release();
 });
 
-app.post("/send2", (req, res) => {
 
-    console.log('Received TECHNICAL (/send3) email data:', req.body);
+app.post("/sendMail", (req, res) => {
+    //const conn = pool.getConnection();
 
+    //console.log('Received CLIENT (/send1) email data:', req.body);
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(500).json(err)
         } else if (err) {
             return res.status(500).json(err)
         }
-        let attachments = [];
+
+        let mailOptions = {
+            from: process.env.EMAIL,
+            to: `${req.body.email}`,
+            subject: `${req.body.name}`,
+            html: `${req.body.html}`,
+            attachments: [
+                {
+                    content: req.files[0],
+                    filename: `invoice${req.body.Ordernumber}.pdf`,
+                    contentType: 'application/pdf',
+                },
+                {
+                    content: req.files[1],
+                    filename: `authorization${req.body.Ordernumber}.pdf`,
+                    contentType: 'application/pdf',
+                }
+            ],
+        };
+        console.log(mailOptions)
+
+    transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+            console.error('Błąd podczas wysyłania e-maila:', err);
+            res.json({
+                status: "fail",
+            });
+        } else {
+            console.log("== Message Sent ==");
+            res.json({
+                status: "success",
+            });
+        }
+    });
+    })
+    //conn.release();
+});
+
+app.post("/send2", (req, res) => {
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
+        }
+            //console.log('Received TECHNICAL (/send3) email data:', req.body);
+        const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
+        const pathToAttachment2 = path.join(global.__dirname, `authorization${req.body.Ordernumber}.pdf`);
+        const pathToAttachment3 = path.join(global.__dirname, `ALVAuthorization${req.body.Ordernumber}.pdf`);
+        const pathToAttachment4 = path.join(global.__dirname, `ApostilleAuthorization${req.body.Ordernumber}.pdf`);
+        const pathToAttachment5 = path.join(global.__dirname, `CertificateAuthorization${req.body.Ordernumber}.pdf`);
+        const attachment = fs.readFileSync(pathToAttachment).toString('base64');
+        const attachment2 = fs.readFileSync(pathToAttachment).toString('base64');
+        const attachment3 = fs.readFileSync(pathToAttachment).toString('base64');
+        const attachment4 = fs.readFileSync(pathToAttachment).toString('base64');
+        const attachment5 = fs.readFileSync(pathToAttachment).toString('base64');
+        let attachments = [
+            {
+                content: attachment,
+                filename: `invoice${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment,
+            },
+            {
+                content: attachment2,
+                filename: `authorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment2,
+            },
+            {
+                content: attachment3,
+                filename: `ALVAuthorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment3,
+            },
+            {
+                content: attachment4,
+                filename: `ApostilleAuthorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment4,
+            },
+            {
+                content: attachment5,
+                filename: `CertificateAuthorization${req.body.Ordernumber}.pdf`,
+                contentType: 'application/pdf',
+                path: pathToAttachment5,
+            },
+        ];
         req.files.forEach((file) => {
             const filePath = file.path;
             const f = fs.readFileSync(filePath).toString('base64');
@@ -1222,6 +2009,7 @@ app.post("/send2", (req, res) => {
             attachments.push(attachment)
         })
         
+        console.log(attachments)
     
         const q = "SELECT Email FROM emails WHERE ID=2;";
         pool.query(q, (err, data) => {
@@ -1238,7 +2026,6 @@ app.post("/send2", (req, res) => {
                 subject: `${req.body.name}`,
                 html: `${req.body.html}`,
                 attachments: attachments
-            
             };
 
 
@@ -1269,7 +2056,7 @@ app.post("/send2", (req, res) => {
 app.post("/send3", (req, res) => {
     //const conn = pool.getConnection();
 
-    console.log('Received TECHNICAL (/send4) email data:', req.body);
+    //console.log('Received TECHNICAL (/send4) email data:', req.body);
 
 
     // const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
