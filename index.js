@@ -781,10 +781,11 @@ app.post("/addLanguageSPageHeader", async(req, res) => {
 app.put("/updateSPageHeader", async(req, res) => {
     //const conn = pool.getConnection();
     const bookId = req.params.id;
-    const q = 'UPDATE `sPageHeaders` SET `provideHeader`=?,`title`=?,`titleComment`=?,`forename`=?,`forenameComment`=?,`middleName`=?,`middleNameComment`=?,`surname`=?,`surnameComment`=?,`surnameBirth`=?,`surnameBirthComment`=?,`birthDate`=?,`birthDateComment`=?,`birthTown`=?,`birthTownComment`=?,`birthCountry`=?,`birthCountryComment`=?,`montherName`=?,`montherNameComment`=?,`motherMName`=?,`motherMNameComment`=?,`idNumber`=?,`idNumberComment`=?,`currentAdress`=?,`addressLine1`=?,`addressLine1Comment`=?,`addressLine2`=?,`addressLine2Comment`=?,`country`=?,`countryComment`=?,`emailAddress`=?,`emailAddressComment`=?,`confEmailAddress`=?,`confEmailAddressComment`=?,`phoneNumber`=?,`phoneNumberComment`=?,`uploadScan`=?,`uploadScanComment`=?,`indedRecipent`=?,`indedRecipentComment`=?,`addComment`=?,`addCommentComment`=?,`uploadFiles`=?,`id`=?,`fatherName`=?,`fatherNameComment`=?,`mr`=?,`ms`=? WHERE `id`=?';
+    const q = 'UPDATE `sPageHeaders` SET `provideHeader`=?,`provideComment`=?, `title`=?,`titleComment`=?,`forename`=?,`forenameComment`=?,`middleName`=?,`middleNameComment`=?,`surname`=?,`surnameComment`=?,`surnameBirth`=?,`surnameBirthComment`=?,`birthDate`=?,`birthDateComment`=?,`birthTown`=?,`birthTownComment`=?,`birthCountry`=?,`birthCountryComment`=?,`montherName`=?,`montherNameComment`=?,`motherMName`=?,`motherMNameComment`=?,`idNumber`=?,`idNumberComment`=?,`currentAdress`=?,`addressLine1`=?,`addressLine1Comment`=?,`addressLine2`=?,`addressLine2Comment`=?,`country`=?,`countryComment`=?,`emailAddress`=?,`emailAddressComment`=?,`confEmailAddress`=?,`confEmailAddressComment`=?,`phoneNumber`=?,`phoneNumberComment`=?,`uploadScan`=?,`uploadScanComment`=?,`indedRecipent`=?,`indedRecipentComment`=?,`addComment`=?,`addCommentComment`=?,`uploadFiles`=?,`id`=?,`fatherName`=?,`fatherNameComment`=?,`mr`=?,`ms`=? WHERE `id`=?';
 
     const values = [
         req.body.provideHeader,
+        req.body.provideComment,
         req.body.title,
         req.body.titleComment,
         req.body.forename,
@@ -908,7 +909,7 @@ app.post("/addcitizenships", async(req, res) => {
 app.post("/addalv", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO alv(`language`,`id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`email_text`,`pdf_text`,`kolejnosc`) VALUES (?)";
+    const q = "INSERT INTO alv(`language`,`id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`email_text`,`pdf_text`,`kolejnosc`,`comment`) VALUES (?)";
 
     const values = [
         req.body.language,
@@ -925,6 +926,7 @@ app.post("/addalv", async(req, res) => {
         req.body.email_text,
         req.body.pdf_text,
         req.body.order_table,
+        req.body.comment,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -969,7 +971,7 @@ app.post("/addappostile", async(req, res) => {
 app.post("/adddelivery", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO delivery(`id`,`delivery_option`,`delTat`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`type`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
+    const q = "INSERT INTO delivery(`id`,`delivery_option`,`delTat`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`type`,`email_text`,`kolejnosc`,`pdf_text`,`comment`) VALUES (?)";
 
     const values = [
         req.body.id,
@@ -987,6 +989,7 @@ app.post("/adddelivery", async(req, res) => {
         req.body.email_text,
         req.body.order_table,
         req.body.pdf_text,
+        req.body.comment,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -1517,7 +1520,7 @@ app.put("/alv/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE alv SET `language`= ?, `AddTAT`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `email_text`=?,`pdf_text`=?,`kolejnosc`=? WHERE `id` = ?";
+    const q = "UPDATE alv SET `language`= ?, `AddTAT`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `email_text`=?,`pdf_text`=?,`kolejnosc`=?,`comment`=? WHERE `id` = ?";
 
     const values = [
         req.body.language,
@@ -1533,7 +1536,8 @@ app.put("/alv/:id", async(req, res) => {
         req.body.id,
         req.body.email_text,
         req.body.pdf_text,
-        req.body.order_table
+        req.body.order_table,
+        req.body.comment
     ];
 
     pool.query(q, [...values,bookId], (err, data) => {
@@ -1613,7 +1617,7 @@ app.put("/delivery/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE delivery SET `id`= ?, `delivery_option`= ?, `delTat`= ?,`priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `type`= ?, `email_text`=?,`kolejnosc`=?,`pdf_text`=? WHERE `id` = ?";
+    const q = "UPDATE delivery SET `id`= ?, `delivery_option`= ?, `delTat`= ?,`priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `type`= ?, `email_text`=?,`kolejnosc`=?,`pdf_text`=?,`comment`=? WHERE `id` = ?";
 
     const values = [
         req.body.id,
@@ -1631,6 +1635,7 @@ app.put("/delivery/:id", async(req, res) => {
         req.body.email_text,
         req.body.order_table,
         req.body.pdf_text,
+        req.body.comment,
     ];
 
     pool.query(q, [...values,bookId], (err, data) => {
