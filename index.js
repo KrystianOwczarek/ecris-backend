@@ -608,13 +608,15 @@ app.post("/addcountries", async(req, res) => {
 app.post("/addcountriesList", async(req, res) => {
     //const conn = pool.getConnection();
 
-    const q = "INSERT INTO countryList(`country`,`vat`,`kolejnosc`,`id`) VALUES (?)";
+    const q = "INSERT INTO countryList(`country`,`vat`,`kolejnosc`,`id`,`deliveryTat`,`disabledService`) VALUES (?)";
 
     const values = [
         req.body.country,
         req.body.vat,
         req.body.order_table,
         req.body.id,
+        req.body.deliveryTat,
+        req.body.disabledService,
     ];
 
     pool.query(q, [values], (err, data) => {
@@ -1452,13 +1454,15 @@ app.put("/updateCountryList/:id", async(req, res) => {
     //const conn = pool.getConnection();
 
     const bookId = req.params.id;
-    const q = "UPDATE countryList SET `country`=?,`vat`=?,`kolejnosc`=?,`id`=? WHERE id = ?";
+    const q = "UPDATE countryList SET `country`=?,`vat`=?,`kolejnosc`=?,`id`=?,`deliveryTat`=?, `disabledService`=? WHERE id = ?";
 
     const values = [
         req.body.country,
         req.body.vat,
         req.body.order_table,
         req.body.id,
+        req.body.deliveryTat,
+        req.body.disabledService,
     ];
     pool.query(q, [...values, bookId], (err, data) => {
         if (err) return res.send(err);
