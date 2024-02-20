@@ -219,6 +219,61 @@ app.post("/changePageLanguage", async (req, res) => {
         //conn.release();
 });
 
+app.post("/addNewCountryColumn", async (req, res) => {
+    const arr = ['countries', 'alv', 'apostille', 'certificate', 'delivery'];
+
+    const servicesNames = [];
+    req.body.services.forEach((service) => { 
+        servicesNames.push(service.allServices);
+    })
+
+    let errorOccurred;
+    const finalArray = arr.concat(servicesNames);
+    for(let i = 0; i < finalArray.length; i++){
+        const q = `ALTER TABLE ${finalArray[i]} ADD ${req.body.country} INT(11) AFTER ${req.body.lastColumn}`;
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                errorOccurred = true;
+            }
+        });
+    }
+
+    if (errorOccurred) { // Sprawdzamy flagę i wysyłamy odpowiednią odpowiedź
+        return res.status(500).json({ message: "An error occurred" });
+    } else {
+        return res.json({ message: "Link update successfully" });
+    }
+});
+
+app.post("/deleteColumn", async (req, res) => {
+    const arr = ['countries', 'alv', 'apostille', 'certificate', 'delivery'];
+
+    const servicesNames = [];
+    req.body.services.forEach((service) => { 
+        servicesNames.push(service.allServices);
+    })
+    
+    let errorOccurred;
+    const finalArray = arr.concat(servicesNames);
+    for(let i = 0; i < finalArray.length; i++){
+        const q = `ALTER TABLE ${finalArray[i]} DROP COLUMN ${req.body.column}`;
+
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                errorOccurred = true;
+            }
+        });
+    }
+
+    if (errorOccurred) { // Sprawdzamy flagę i wysyłamy odpowiednią odpowiedź
+        return res.status(500).json({ message: "An error occurred" });
+    } else {
+        return res.json({ message: "Link update successfully" });
+    }
+});
+
 //Handle Section Visibility
 app.put("/enableService/:id", async (req, res) => {
     //const conn = pool.getConnection();
@@ -282,6 +337,81 @@ app.get("/aditset", async (req, res) => {
     //const conn = pool.getConnection();
 
     const q = "SELECT * FROM aditset";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+
+    //conn.release();
+});
+
+app.get("/countriesColumn", async (req, res) => {
+    //const conn = pool.getConnection();
+
+    const q = "SHOW COLUMNS FROM countries";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+
+    //conn.release();
+});
+
+app.get("/alvColumn", async (req, res) => {
+    //const conn = pool.getConnection();
+
+    const q = "SHOW COLUMNS FROM alv";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+
+    //conn.release();
+});
+
+app.get("/apostilleColumn", async (req, res) => {
+    //const conn = pool.getConnection();
+
+    const q = "SHOW COLUMNS FROM apostille";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+
+    //conn.release();
+});
+
+app.get("/certificateColumn", async (req, res) => {
+    //const conn = pool.getConnection();
+
+    const q = "SHOW COLUMNS FROM certificate";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(err);
+        }
+        return res.json(data);
+    });
+
+    //conn.release();
+});
+
+app.get("/deliveryColumn", async (req, res) => {
+    //const conn = pool.getConnection();
+
+    const q = "SHOW COLUMNS FROM delivery";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -402,6 +532,17 @@ app.get("/globalCountryGetComment", async(req, res) => {
 
 app.get("/globalGetTatCountry", async(req, res) => {
     const q = "SELECT * FROM globalTatCountry";
+    await pool.query(q, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.json(data);
+        }
+        return res.json(data);
+    });
+});
+
+app.get("/globalPrice", async(req, res) => {
+    const q = "SELECT * FROM globalPrice";
     await pool.query(q, (err, data) => {
         if (err) {
             console.log(err);
@@ -573,21 +714,28 @@ app.get("/delivery", async(req, res) => {
 //------------------------------------------Adding Data-----------------------------------------------------------------
 app.post("/addcountries", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'country_name' && column !== 'tat' && column !== 'global_price' && column !== 'global_currency' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`');
+        }
+    })
 
-    const q = "INSERT INTO countries(`country_name`,`id`,`tat`,`price_eu`,`price_gb`,`price_bu`,`price_cz`,`price_pl`,`price_dk`,`price_ro`,`price_se`,`comment`,`comment2`, `email_text`, `pdf_text`, `requirement`, `checkboxStatus`, `addtat`, `subtat`,`kolejnosc`) VALUES (?)";
+    const q = "INSERT INTO countries(`country_name`,`id`,`tat`, "+ country.toString() +", `comment`,`comment2`, `email_text`, `pdf_text`, `requirement`, `checkboxStatus`, `addtat`, `subtat`,`kolejnosc`,`global_price`,`global_currency`) VALUES (?)";
 
     const values = [
         req.body.country_name,
         req.body.id,
         req.body.tat,
-        req.body.price_eu,
-        req.body.price_gb,
-        req.body.price_bu,
-        req.body.price_cz,
-        req.body.price_pl,
-        req.body.price_dk,
-        req.body.price_ro,
-        req.body.price_se,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'country_name' && key !== 'global_price' && key !== 'global_currency' && key !== 'tat' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.comment,
         req.body.comment2,
         req.body.email_text,
@@ -596,10 +744,14 @@ app.post("/addcountries", async(req, res) => {
         req.body.checkboxStatus,
         req.body.increaseTat,
         req.body.decreaseTat,
-        req.body.order_table
-    ];
+        req.body.order_table,
+        req.body.global_price,
+        req.body.global_currency
+    ]
 
-    pool.query(q, [values], (err, data) => {
+    const finalValueArray = values.concat(valuesToConcat);
+
+    pool.query(q, [finalValueArray], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
@@ -678,7 +830,6 @@ app.post("/citizenshipPDFMessage", async(req, res) => {
 app.post("/typeSendingMailUpdate", async(req, res) => {
     //const conn = pool.getConnection();
     const q = `UPDATE typeSendingMail SET mailStatus=${req.body.mailStatus} WHERE id=1`;
-    console.log(q)
     pool.query(q, (err, data) => {
         if(err) return res.send(err);
         return res.json(data);
@@ -713,6 +864,39 @@ app.post("/addLanguageFPageHeader", async(req, res) => {
         if(err) return res.send(err);
         return res.json(data);
     })
+});
+
+app.put("/updateColumns", async (req, res) => {
+    //const conn = pool.getConnection();
+    const countries = [];
+    const newColumns = [];
+    const alterArray = [];
+    Object.keys(req.body.obj).forEach((key) => {
+        newColumns.push(req.body.obj[key]);
+        countries.push('CHANGE '+ key +' '+ req.body.obj[key] +' INT(11) NOT NULL');
+    })
+
+    req.body.services.forEach((service) => { alterArray.push(`ALTER TABLE ${service.allServices} ${countries};`) })
+    const q = [ 'ALTER TABLE countries '+ countries +';', 'ALTER TABLE alv '+ countries +';', 'ALTER TABLE apostille '+ countries +';', 'ALTER TABLE certificate '+ countries +';', 'ALTER TABLE delivery '+ countries +';'];
+    
+    let errorOccurred;
+    const finalArray = q.concat(alterArray);
+
+    for(let i = 0; i < finalArray.length; i++){
+        const queries = finalArray[i];
+        pool.query(queries, (err, data) => {
+            if (err) {
+                console.log(err);
+                errorOccurred = true;
+            }
+        });
+    }
+
+    if (errorOccurred) { // Sprawdzamy flagę i wysyłamy odpowiednią odpowiedź
+        return res.status(500).json({ message: "An error occurred" });
+    } else {
+        return res.json({ message: "Link update successfully" });
+    } 
 });
 
 app.put("/updatefPageHeader", async (req, res) => {
@@ -910,51 +1094,67 @@ app.post("/addcitizenships", async(req, res) => {
 
 app.post("/addalv", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'language' && column !== 'AddTAT' && column !== 'kolejnosc' && column !== 'global_price' && column !== 'global_currency' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`');
+        }
+    })
 
-    const q = "INSERT INTO alv(`language`,`id`,`addTAT`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`email_text`,`pdf_text`,`kolejnosc`,`comment`) VALUES (?)";
+    const q = "INSERT INTO alv(`language`,`id`,`addTAT`, "+ country.toString() +",`email_text`,`pdf_text`,`kolejnosc`,`comment`,`global_price`,`global_currency`) VALUES (?)";
 
     const values = [
         req.body.language,
         req.body.id,
         req.body.AddTAT,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'language' && key !== 'AddTAT' && key !== 'global_price' && key !== 'global_currency' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.email_text,
         req.body.pdf_text,
         req.body.order_table,
         req.body.comment,
-    ];
+        req.body.global_price,
+        req.body.global_currency,
+    ]
 
-    pool.query(q, [values], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [finalValuesArray], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.post("/addappostile", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'type' && column !== 'tatApost' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`');
+        }
+    });
 
-    const q = "INSERT INTO apostille(`type`,`tatApost`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`id`,`comment`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
+    const q = "INSERT INTO apostille(`type`,`tatApost`, "+ country.toString() +",`id`,`comment`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
 
     const values = [
         req.body.type,
         req.body.tatApost,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'type' && key !== 'tatApost' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    };
+
+    const valuesToConcat = [
         req.body.id,
         req.body.comment,
         req.body.email_text,
@@ -962,79 +1162,102 @@ app.post("/addappostile", async(req, res) => {
         req.body.pdf_text,
     ];
 
-    pool.query(q, [values], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+    pool.query(q, [finalValuesArray], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.post("/adddelivery", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== "global_price" && column !== "global_currency" && column !== 'delivery_option' && column !== 'type' && column !== 'delTat' && column !== 'influCer' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`');
+        }
+    })
 
-    const q = "INSERT INTO delivery(`id`,`delivery_option`,`delTat`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`type`,`email_text`,`kolejnosc`,`pdf_text`,`comment`) VALUES (?)";
+    const q = "INSERT INTO delivery(`id`,`delivery_option`,`delTat`, "+ country.toString() +",`type`,`email_text`,`kolejnosc`,`pdf_text`,`comment`,`global_price`,`global_currency`) VALUES (?)";
 
     const values = [
         req.body.id,
         req.body.delivery_option,
         req.body.delTat,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== "global_price" && key !== "global_currency" && key !== 'delivery_option' && key !== 'type' && key !== 'delTat' && key !== 'influCer' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.type,
         req.body.email_text,
         req.body.order_table,
         req.body.pdf_text,
         req.body.comment,
-    ];
+        req.body.global_price,
+        req.body.global_currency,
+    ]
 
-    pool.query(q, [values], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [finalValuesArray], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.post("/addcertificate", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'language' && column !== "global_price" && column !== "global_currency" && column !== 'tatCER' && column !== 'influCer' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`');
+        }
+    })
 
-    const q = "INSERT INTO certificate(`language`,`tatCER`,`priceEU`,`priceGB`,`priceBU`,`priceCZ`,`pricePL`,`priceDK`,`priceRO`,`priceSE`,`id`,`comment`,`influCer`,`email_text`,`kolejnosc`,`pdf_text`) VALUES (?)";
-
+    const q = "INSERT INTO certificate (`language`,`tatCER`,"+ country.toString() +",`id`,`comment`,`influCer`,`email_text`,`kolejnosc`,`pdf_text`,`global_price`,`global_currency`) VALUES (?)";
+    
     const values = [
         req.body.language,
         req.body.tatCER,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'language' && key !== 'tatCER' && key !== 'influCer' && key !== "global_price" && key !== "global_currency" && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.id,
         req.body.comment,
         req.body.influCer,
         req.body.email_text,
         req.body.order_table,
         req.body.pdf_text,
-    ];
+        req.body.global_price,
+        req.body.global_currency,
+    ]
 
-    pool.query(q, [values], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [finalValuesArray], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
 });
 
 app.post("/addService", async(req, res) => {
+    const arr = [];
+    req.body.countries.forEach((el) => {
+        arr.push(`${el} INT(11)`)
+    })
 
-    const q = `CREATE TABLE ${req.body.header} ( Type VARCHAR(255), Tat INT(11), priceEU INT(11), priceGB INT(11), priceBU INT(11), priceCZ INT(11),pricePL INT(11), priceDK INT(11), priceRO INT(11), priceSE INT(11), comment LONGTEXT, email_text LONGTEXT, visibility INT(11), selected INT(11), multiplicationPrice INT(11), multiplicationTat INT(11), visibilityASelection LONGTEXT, choiceAfterChoice LONGTEXT,pdfText LONGTEXT, bubbleText LONGTEXT, kolejnosc INT(11), id VARCHAR(255) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
+    const q = `CREATE TABLE ${req.body.data.header} ( Type VARCHAR(255), Tat INT(11), ${arr.toString()}, globalPrice INT(11), globalCurrency VARCHAR(255), comment LONGTEXT, email_text LONGTEXT, visibility INT(11), selected INT(11), multiplicationPrice INT(11), multiplicationTat INT(11), visibilityASelection LONGTEXT, choiceAfterChoice LONGTEXT,pdfText LONGTEXT, bubbleText LONGTEXT, kolejnosc INT(11), id VARCHAR(255) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
     pool.query(q, (err, data) => {
         if (err) return res.send(err);
@@ -1094,13 +1317,16 @@ app.put('/updateColumnsValues/:id', async(req, res) => {
     const { id } = req.params;
     const array = [];
     const obj = req.body.obj;
-    for(const key in obj) {
-        array.push(`${key}=?`)
-    }
-    const q = `UPDATE ${req.body.header} SET ${array.toString()}  WHERE id='${id}'`;
-    const values = Object.values(obj);
-
-
+    const values = [];
+    obj.map((o) => { 
+        for(const key in o) {
+            array.push('`'+ key +'`=?')
+            console.log(o[key])
+            values.push(o[key])
+        }
+    })
+    
+    const q = `UPDATE ${req.body.header} SET ${array.toString()} WHERE id='${id}'`;
     pool.query(q,[...values, id], (err, data) => {
         if (err) {
             console.log(err);
@@ -1112,24 +1338,25 @@ app.put('/updateColumnsValues/:id', async(req, res) => {
 
 app.post('/addColumnsValues', async(req, res) => {
     const columnArray = [];
-    req.body.columns.map(column => columnArray.push(column.Field));
+    req.body.columns.forEach(column => columnArray.push(column.Field));
     const columnString = columnArray.toString();
+
     const q = `INSERT INTO ${req.body.header} (${columnString}) VALUES (?)`;
     const values = [];
     for(const key in req.body.values){
         values.push(req.body.values[key]);
-    }
-    values.push(req.body.id);
+    };
 
+    values.push(req.body.id);
 
     pool.query(q, [values], (err, data) => {
         if (err) {
             console.log(err);
             return res.json(err);
-        }
+        };
         return res.json(data);
     });
-})
+});
 
 app.post('/newServices', async(req, res) => {
     const q = 'INSERT INTO newServices (`allServices`,`serviceVisibility`,`requirement`,`multiplicity`,`inclusionTat`,`CrcOrAsTat`,`multiplicationPrice`,`multiplicationTat`,`bubbleText`) VALUES (?)';
@@ -1302,7 +1529,6 @@ app.delete("/deleteCountryList/:id", async(req, res) => {
 
 app.post("/deleteService", async(req, res) => {
     const q = `DROP TABLE ${req.body.header}`;
-    console.log(q)
     pool.query(q, (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
@@ -1416,22 +1642,28 @@ app.post("/orderNumbers", async(req, res) => {
 
 app.put("/countries/:id", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'country_name' && column !== 'tat' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`=?');
+        }
+    })
 
     const bookId = req.params.id;
-    const q = "UPDATE countries SET `country_name`= ?, id = ?, `tat`= ?, `price_eu`= ?, `price_gb`= ?, `price_bu`= ?, `price_cz`= ?, `price_pl`= ?, `price_dk`= ?, `price_ro`= ?, `price_se`= ?, `comment`= ?, `comment2`= ?, `email_text`= ?, `pdf_text`= ?, `requirement`=?, `checkboxStatus`=?, `addtat`=?, `subtat`=?,`kolejnosc`=? WHERE id = ?";
-
+    const q = "UPDATE countries SET `country_name`= ?, id = ?, `tat`= ?,"+ country.toString() +" , `comment`= ?, `comment2`= ?, `email_text`= ?, `pdf_text`= ?, `requirement`=?, `checkboxStatus`=?, `addtat`=?, `subtat`=?,`kolejnosc`=?, `global_price`=?, `global_currency`=? WHERE id = ?";
     const values = [
         req.body.country_name,
         req.body.id,
         req.body.tat,
-        req.body.price_eu,
-        req.body.price_gb,
-        req.body.price_bu,
-        req.body.price_cz,
-        req.body.price_pl,
-        req.body.price_dk,
-        req.body.price_ro,
-        req.body.price_se,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'country_name' && key !== 'tat' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.comment,
         req.body.comment2,
         req.body.email_text,
@@ -1440,14 +1672,17 @@ app.put("/countries/:id", async(req, res) => {
         req.body.checkboxStatus,
         req.body.increaseTat,
         req.body.decreaseTat,
-        req.body.order_table
-    ];
-    pool.query(q, [...values, bookId], (err, data) => {
+        req.body.order_table,
+        req.body.global_price,
+        req.body.global_currency
+    ]
+
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [...finalValuesArray, bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.put("/updateCountryList/:id", async(req, res) => {
@@ -1522,132 +1757,169 @@ app.put("/edit/:id", async(req, res) => {
 
 app.put("/alv/:id", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'language' && column !== 'AddTAT' && column !== 'global_price' && column !== 'global_currency' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`=?');
+        }
+    })
 
     const bookId = req.params.id;
-    const q = "UPDATE alv SET `language`= ?, `AddTAT`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `email_text`=?,`pdf_text`=?,`kolejnosc`=?,`comment`=? WHERE `id` = ?";
+    const q = "UPDATE alv SET `language`= ?, `AddTAT`= ?,"+ country.toString() +", `id`=?, `email_text`=?,`pdf_text`=?,`kolejnosc`=?,`comment`=?,`global_price`=?,`global_currency`=? WHERE `id` = ?";
 
     const values = [
         req.body.language,
         req.body.AddTAT,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'language' && key !== 'AddTAT' && key !== 'kolejnosc' && key !== 'global_price' && key !== 'global_currency' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.id,
         req.body.email_text,
         req.body.pdf_text,
         req.body.order_table,
-        req.body.comment
-    ];
+        req.body.comment,
+        req.body.global_price,
+        req.body.global_currency
+    ]
 
-    pool.query(q, [...values,bookId], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [...finalValuesArray,bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.put("/apostille/:id", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'type' && column !== 'global_price' && column !== 'global_currency' && column !== "global_price" && column !== "global_currency" && column !== 'tatApost' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`=?');
+        }
+    })
 
+    console.log(country)
     const bookId = req.params.id;
-    const q = "UPDATE apostille SET `type`= ?, `tatApost`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `comment`=?, `email_text`=?,`kolejnosc`=?,`pdf_text`=? WHERE `id` = ?";
+    const q = "UPDATE apostille SET `type`= ?, `tatApost`= ?, "+ country.toString() +", `id`=?, `comment`=?, `email_text`=?,`kolejnosc`=?,`pdf_text`=?,`global_price`=?,`global_currency`=? WHERE `id` = ?";
 
     const values = [
         req.body.type,
         req.body.tatApost,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'type' && key !== 'global_price' && key !== 'global_currency' && key !== 'tatApost' && key !== "global_price" && key !== "global_currency" && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.id,
         req.body.comment,
         req.body.email_text,
         req.body.order_table,
-        req.body.pdf_text
-    ];
+        req.body.pdf_text,
+        req.body.global_price,
+        req.body.global_currency
+    ]
 
-    pool.query(q, [...values,bookId], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [...finalValuesArray,bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.put("/certificate/:id", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'global_price' && column !== 'global_currency' && column !== 'language' && column !== 'tatCER' && column !== 'influCer' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`=?');
+        }
+    })
 
     const bookId = req.params.id;
-    const q = "UPDATE certificate SET `language`= ?, `tatCER`= ?, `priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `id`=?, `comment`=?, `influCer`=?, `email_text`=?,`kolejnosc`=?,`pdf_text`=? WHERE `id` = ?";
+    const q = "UPDATE certificate SET `language`= ?, `tatCER`= ?, "+ country.toString() +", `id`=?, `comment`=?, `influCer`=?, `email_text`=?,`kolejnosc`=?,`pdf_text`=?,`global_price`=?,`global_currency`=? WHERE `id` = ?";
 
     const values = [
         req.body.language,
         req.body.tatCER,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'global_price' && key !== 'global_currency' && key !== 'language' && key !== 'tatCER' && key !== 'influCer' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.id,
         req.body.comment,
         req.body.influCer,
         req.body.email_text,
         req.body.order_table,
         req.body.pdf_text,
-    ];
+        req.body.global_price,
+        req.body.global_currency,
+    ]
 
-    pool.query(q, [...values, bookId], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [...finalValuesArray, bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 app.put("/delivery/:id", async(req, res) => {
     //const conn = pool.getConnection();
+    const country = [];
+    Object.keys(req.body).forEach(( column ) => {
+        if(column !== 'id' && column !== 'global_price' && column !== 'global_currency' && column !== 'delivery_option' && column !== 'type' && column !== 'delTat' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+            country.push('`'+ column +'`=?');
+        }
+    })
 
     const bookId = req.params.id;
-    const q = "UPDATE delivery SET `id`= ?, `delivery_option`= ?, `delTat`= ?,`priceEU`= ?, `priceGB`= ?, `priceBU`= ?, `priceCZ`= ?, `pricePL`= ?, `priceDK`= ?, `priceRO`= ?, `priceSE`= ?, `type`= ?, `email_text`=?,`kolejnosc`=?,`pdf_text`=?,`comment`=? WHERE `id` = ?";
+    const q = "UPDATE delivery SET `id`= ?, `delivery_option`= ?, `delTat`= ?, "+ country.toString() +", `type`= ?, `email_text`=?,`kolejnosc`=?,`pdf_text`=?,`comment`=?,`global_price`=?,`global_currency`=? WHERE `id` = ?";
 
     const values = [
         req.body.id,
         req.body.delivery_option,
         req.body.delTat,
-        req.body.priceEU,
-        req.body.priceGB,
-        req.body.priceBU,
-        req.body.priceCZ,
-        req.body.pricePL,
-        req.body.priceDK,
-        req.body.priceRO,
-        req.body.priceSE,
+    ];
+
+    for(const key in req.body){
+        if(key !== 'id' && key !== 'delivery_option' && key !== 'type' && key !== 'global_price' && key !== 'global_currency' && key !== 'delTat' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+            values.push(req.body[key])
+        }
+    }
+
+    const valuesToConcat = [
         req.body.type,
         req.body.email_text,
         req.body.order_table,
         req.body.pdf_text,
         req.body.comment,
-    ];
+        req.body.global_price,
+        req.body.global_currency,
+    ]
 
-    pool.query(q, [...values,bookId], (err, data) => {
+    const finalValuesArray = values.concat(valuesToConcat);
+
+    pool.query(q, [...finalValuesArray,bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
     });
-
-    //conn.release();
 });
 
 //----------------------------------------------EMAIL PREDIFINED--------------------------------------------------------
@@ -1937,7 +2209,6 @@ app.post("/sendMail", (req, res) => {
                 }
             ],
         };
-        console.log(mailOptions)
 
     transporter.sendMail(mailOptions, function (err, data) {
         if (err) {
@@ -2018,7 +2289,6 @@ app.post("/send2", (req, res) => {
             attachments.push(attachment)
         })
         
-        console.log(attachments)
     
         const q = "SELECT Email FROM emails WHERE ID=2;";
         pool.query(q, (err, data) => {
@@ -2053,13 +2323,6 @@ app.post("/send2", (req, res) => {
             });
         });
     })
-
-    // const pathToAttachment = path.join(global.__dirname, `invoice${req.body.Ordernumber}.pdf`);
-    // const attachment = fs.readFileSync(pathToAttachment).toString('base64');
-
-    
-
-    //conn.release();
 });
 
 app.post("/send3", (req, res) => {
