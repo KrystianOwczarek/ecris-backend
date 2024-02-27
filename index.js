@@ -1136,7 +1136,7 @@ app.post("/addappostile", async(req, res) => {
     //const conn = pool.getConnection();
     const country = [];
     Object.keys(req.body).forEach(( column ) => {
-        if(column !== 'id' && column !== 'type' && column !== 'tatApost' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+        if(column !== 'id' && column !== 'type' && column !== 'tatApost' && column !== 'kolejnosc' && column !== 'global_currency' && column !== "global_price" && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
             country.push('`'+ column +'`');
         }
     });
@@ -1149,7 +1149,7 @@ app.post("/addappostile", async(req, res) => {
     ];
 
     for(const key in req.body){
-        if(key !== 'id' && key !== 'type' && key !== 'tatApost' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+        if(key !== 'id' && key !== 'type' && key !== 'tatApost' && key !== 'global_currency' && key !== "global_price" && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
             values.push(req.body[key])
         }
     };
@@ -1644,7 +1644,7 @@ app.put("/countries/:id", async(req, res) => {
     //const conn = pool.getConnection();
     const country = [];
     Object.keys(req.body).forEach(( column ) => {
-        if(column !== 'id' && column !== 'country_name' && column !== 'tat' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
+        if(column !== 'id' && column !== 'country_name' && column !== 'global_price' && column !== 'global_currency' && column !== 'tat' && column !== 'kolejnosc' && column !== 'AWO' && column !== 'GPC' && column !== 'GTC' && column !== 'GCS' && column !== 'requirement' && column !== 'checkboxStatus' && column !== 'addtat' && column !== 'subtat' && column !== 'email_text' && column !== 'pdf_text' && column !== 'subtat' && column !== 'comment2' && column !== 'comment' && column !== 'increaseTat' && column !== 'decreaseTat' && column !== 'order_table'){
             country.push('`'+ column +'`=?');
         }
     })
@@ -1658,7 +1658,7 @@ app.put("/countries/:id", async(req, res) => {
     ];
 
     for(const key in req.body){
-        if(key !== 'id' && key !== 'country_name' && key !== 'tat' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
+        if(key !== 'id' && key !== 'country_name' && key !== 'global_price' && key !== 'global_currency' && key !== 'tat' && key !== 'kolejnosc' && key !== 'AWO' && key !== 'GPC' && key !== 'GTC' && key !== 'GCS' && key !== 'requirement' && key !== 'checkboxStatus' && key !== 'addtat' && key !== 'subtat' && key !== 'email_text' && key !== 'pdf_text' && key !== 'subtat' && key !== 'comment2' && key !== 'comment' && key !== 'increaseTat' && key !== 'decreaseTat' && key !== 'order_table'){
             values.push(req.body[key])
         }
     }
@@ -1678,7 +1678,7 @@ app.put("/countries/:id", async(req, res) => {
     ]
 
     const finalValuesArray = values.concat(valuesToConcat);
-
+    
     pool.query(q, [...finalValuesArray, bookId], (err, data) => {
         if (err) return res.send(err);
         return res.json(data);
@@ -2114,8 +2114,6 @@ app.post("/send1", (req, res) => {
     const attachment3 = fs.readFileSync(pathToAttachment).toString('base64');
     const attachment4 = fs.readFileSync(pathToAttachment).toString('base64');
     const attachment5 = fs.readFileSync(pathToAttachment).toString('base64');
-
-
 
     let mailOptions = {
         from: process.env.EMAIL,
