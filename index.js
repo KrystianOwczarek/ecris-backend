@@ -219,6 +219,20 @@ app.post("/changePageLanguage", async (req, res) => {
         //conn.release();
 });
 
+app.post("/updateGlobalVat", async (req, res) => {
+    //const conn = pool.getConnection();
+        const q = `UPDATE globalVatRate SET vat='${req.body.vat}' WHERE id=1`;
+        
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json({ message: "Link update successfully" });
+        });
+        //conn.release();
+});
+
 app.post("/addNewCountryColumn", async (req, res) => {
     const arr = ['countries', 'alv', 'apostille', 'certificate', 'delivery'];
 
@@ -331,6 +345,19 @@ app.put("/disableRequired/:id", async (req, res) => {
             return res.json({ message: "Service disabled successfully" });
         });
         //conn.release();
+});
+
+app.get("/globalVat", async (req, res) => {
+    //const conn = pool.getConnection();
+        const q = `SELECT * FROM globalVatRate`;
+        
+        await pool.query(q, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.json(err);
+            }
+            return res.json(data);
+        });
 });
 
 app.get("/aditset", async (req, res) => {
